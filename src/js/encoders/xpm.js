@@ -91,6 +91,20 @@
   }
 
   /**
+   * Normaliza un nombre de variable C para XPM.
+   *
+   * @param {string} value Nombre solicitado.
+   * @returns {string} Identificador seguro.
+   */
+  function safeVariableName(value) {
+    var name = String(value || 'hormi_image').replace(/[^\w]/g, '_');
+    if (!name || /^\d/.test(name)) {
+      name = 'hormi_image';
+    }
+    return name;
+  }
+
+  /**
    * Codifica una imagen como XPM C-style.
    *
    * @param {{width:number,height:number,data:Uint8ClampedArray|Uint8Array}} imageData Imagen RGBA.
@@ -100,12 +114,13 @@
   function encodeXpm(imageData, options) {
     var indexed = buildIndexedImage(imageData, options);
     var cpp = charsPerPixel(indexed.palette.length);
+    var variableName = safeVariableName((options || {}).variableName);
     var codes = indexed.palette.map(function (_color, index) {
       return codeForIndex(index, cpp);
     });
     var lines = [
       '/* XPM */',
-      'static char * hormi_image[] = {',
+      'static char * ' + variableName + '[] = {',
       '"' + imageData.width + ' ' + imageData.height + ' ' + indexed.palette.length + ' ' + cpp + '",'
     ];
 

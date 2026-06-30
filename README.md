@@ -18,9 +18,10 @@ Importa con el navegador los formatos soportados por tu entorno y, ademas, impor
 1. Abre `src/index.html` directamente o ejecuta `make serve`.
 2. Arrastra una o varias imagenes a la zona de entrada.
 3. Selecciona el formato de salida.
-4. Ajusta las opciones del formato, como calidad, fondo, alfa, paleta o profundidad.
-5. Manten `Empaquetar en ZIP` activo para descargar un archivo `.zip`.
-6. Pulsa `Convertir`.
+4. Ajusta las opciones del formato, como resolucion, calidad, fondo, alfa, paleta o profundidad.
+5. Deja `Mantener resolucion original` activado para conservar el tamano de cada imagen, o desmarcalo para desplegar ancho, alto, porcentaje y filtro de escala.
+6. Manten `Empaquetar en ZIP` activo para descargar un archivo `.zip`.
+7. Pulsa `Convertir`.
 
 La aplicacion funciona localmente. Los formatos nativos dependen del navegador y los formatos especiales usan codificadores incluidos en `src/js`.
 
@@ -67,7 +68,7 @@ make run-net
 make test
 ```
 
-Las pruebas generan una imagen RGBA pequena y validan exportacion/importacion en los codificadores propios: `QOI`, `BMP`, `TGA`, `PPM`, `PGM`, `PBM`, `XPM`, `GIF` estatico/animado, `ICO`, `TIFF` y `ZIP`.
+Las pruebas generan una imagen RGBA pequena y validan redimensionado comun, exportacion/importacion y opciones especificas en los codificadores propios: `QOI`, `BMP`, `TGA`, `PPM`, `PGM`, `PBM`, `XPM`, `GIF` estatico/animado, `ICO`, `TIFF` y `ZIP`.
 
 ## Documentacion
 

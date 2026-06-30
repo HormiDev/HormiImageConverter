@@ -27,8 +27,9 @@ docs/
 3. Los importadores propios decodifican formatos no nativos cuando aplica.
 4. El navegador decodifica el resto en un `canvas`.
 5. `formats/catalog.js` define formato, extension, MIME y opciones.
-6. `encoders/registry.js` llama al codificador adecuado.
-7. `conversion/converter.js` nombra salidas, genera ZIP y descarga.
+6. `conversion/resize.js` mantiene o cambia la resolucion antes de exportar.
+7. `encoders/registry.js` llama al codificador adecuado.
+8. `conversion/converter.js` nombra salidas, genera ZIP y descarga.
 
 ## Convenciones
 

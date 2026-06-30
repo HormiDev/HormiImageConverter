@@ -36,6 +36,102 @@
   }
 
   /**
+   * Crea una opcion para aplanar el canal alfa.
+   *
+   * @param {boolean} value Valor inicial.
+   * @returns {object} Definicion de opcion.
+   */
+  function flattenAlphaOption(value) {
+    return {
+      id: 'flattenAlpha',
+      label: 'Aplanar transparencia',
+      type: 'checkbox',
+      default: Boolean(value)
+    };
+  }
+
+  /**
+   * Crea las opciones comunes de resolucion de exportacion.
+   *
+   * @returns {object[]} Definiciones de opciones.
+   */
+  function resolutionOptions() {
+    var whenUnlocked = { id: 'keepResolution', value: false };
+    return [
+      {
+        id: 'keepResolution',
+        label: 'Mantener resolucion original',
+        type: 'checkbox',
+        default: true
+      },
+      {
+        id: 'resizeMode',
+        label: 'Modo de resolucion',
+        type: 'select',
+        default: 'exact',
+        dependsOn: whenUnlocked,
+        choices: [
+          { value: 'exact', label: 'Ancho y alto exactos' },
+          { value: 'width', label: 'Ancho proporcional' },
+          { value: 'height', label: 'Alto proporcional' },
+          { value: 'percent', label: 'Por porcentaje' }
+        ]
+      },
+      {
+        id: 'resizeWidth',
+        label: 'Ancho',
+        type: 'number',
+        min: 1,
+        max: 8192,
+        step: 1,
+        default: 1024,
+        dependsOn: whenUnlocked
+      },
+      {
+        id: 'resizeHeight',
+        label: 'Alto',
+        type: 'number',
+        min: 1,
+        max: 8192,
+        step: 1,
+        default: 1024,
+        dependsOn: whenUnlocked
+      },
+      {
+        id: 'resizePercent',
+        label: 'Porcentaje',
+        type: 'number',
+        min: 1,
+        max: 800,
+        step: 1,
+        default: 100,
+        dependsOn: whenUnlocked
+      },
+      {
+        id: 'resizeFilter',
+        label: 'Filtro de escala',
+        type: 'select',
+        default: 'smooth',
+        dependsOn: whenUnlocked,
+        choices: [
+          { value: 'smooth', label: 'Suavizado' },
+          { value: 'nearest', label: 'Pixel art' }
+        ]
+      }
+    ];
+  }
+
+  /**
+   * Anteponer las opciones comunes a las opciones de formato.
+   *
+   * @param {object[]} options Opciones especificas.
+   * @returns {object[]} Opciones completas.
+   */
+  function exportOptions(options) {
+    return resolutionOptions().concat(options || []);
+  }
+
+  /**
    * Crea una opcion de tabla de colores.
    *
    * @param {number} value Valor inicial.
@@ -93,7 +189,7 @@
       mime: 'image/png',
       encoder: 'native',
       description: 'Sin perdida, alfa completo, ideal para capturas e interfaz.',
-      options: []
+      options: exportOptions([flattenAlphaOption(false), backgroundOption()])
     },
     {
       id: 'jpeg',
@@ -102,7 +198,7 @@
       mime: 'image/jpeg',
       encoder: 'native',
       description: 'Con perdida, sin transparencia, recomendado para fotografia.',
-      options: [qualityOption(0.92), backgroundOption()]
+      options: exportOptions([qualityOption(0.92), backgroundOption()])
     },
     {
       id: 'webp',
@@ -111,7 +207,7 @@
       mime: 'image/webp',
       encoder: 'native',
       description: 'Formato moderno con alfa y compresion eficiente.',
-      options: [qualityOption(0.9)]
+      options: exportOptions([qualityOption(0.9), flattenAlphaOption(false), backgroundOption()])
     },
     {
       id: 'avif',
@@ -120,7 +216,7 @@
       mime: 'image/avif',
       encoder: 'native',
       description: 'Formato moderno con perdida; depende del navegador.',
-      options: [qualityOption(0.8)]
+      options: exportOptions([qualityOption(0.8), flattenAlphaOption(false), backgroundOption()])
     },
     {
       id: 'gif',
@@ -129,7 +225,7 @@
       mime: 'image/gif',
       encoder: 'gif',
       description: 'GIF89a estatico o animado con paleta indexada.',
-      options: [
+      options: exportOptions([
         colorsOption(128, 256),
         transparencyOption(),
         alphaThresholdOption(),
@@ -207,7 +303,7 @@
           ]
         },
         backgroundOption()
-      ]
+      ])
     },
     {
       id: 'bmp',
@@ -216,7 +312,7 @@
       mime: 'image/bmp',
       encoder: 'bmp',
       description: 'Mapa de bits Windows sin compresion.',
-      options: [
+      options: exportOptions([
         {
           id: 'bitDepth',
           label: 'Profundidad',
@@ -228,7 +324,7 @@
           ]
         },
         backgroundOption()
-      ]
+      ])
     },
     {
       id: 'ico',
@@ -237,17 +333,17 @@
       mime: 'image/x-icon',
       encoder: 'ico',
       description: 'Icono Windows de una resolucion.',
-      options: [
+      options: exportOptions([
         {
           id: 'size',
-          label: 'Tamano',
+          label: 'Tamano ICO',
           type: 'select',
-          default: '64',
-          choices: ['16', '24', '32', '48', '64', '128', '256'].map(function (size) {
+          default: 'source',
+          choices: [{ value: 'source', label: 'Resolucion actual' }].concat(['16', '24', '32', '48', '64', '128', '256'].map(function (size) {
             return { value: size, label: size + ' x ' + size };
-          })
+          }))
         }
-      ]
+      ])
     },
     {
       id: 'tiff',
@@ -256,7 +352,7 @@
       mime: 'image/tiff',
       encoder: 'tiff',
       description: 'TIFF baseline sin compresion.',
-      options: [
+      options: exportOptions([
         {
           id: 'alphaMode',
           label: 'Alfa',
@@ -267,8 +363,17 @@
             { value: 'preserve', label: 'Guardar canal alfa' }
           ]
         },
+        {
+          id: 'dpi',
+          label: 'DPI',
+          type: 'number',
+          min: 1,
+          max: 2400,
+          step: 1,
+          default: 72
+        },
         backgroundOption()
-      ]
+      ])
     },
     {
       id: 'tga',
@@ -277,7 +382,7 @@
       mime: 'image/x-tga',
       encoder: 'tga',
       description: 'Targa sin compresion, util en pipelines graficos.',
-      options: [
+      options: exportOptions([
         {
           id: 'bitDepth',
           label: 'Profundidad',
@@ -288,8 +393,18 @@
             { value: '32', label: '32 bits RGBA' }
           ]
         },
+        {
+          id: 'origin',
+          label: 'Origen',
+          type: 'select',
+          default: 'top',
+          choices: [
+            { value: 'top', label: 'Arriba izquierda' },
+            { value: 'bottom', label: 'Abajo izquierda' }
+          ]
+        },
         backgroundOption()
-      ]
+      ])
     },
     {
       id: 'qoi',
@@ -298,7 +413,7 @@
       mime: 'image/qoi',
       encoder: 'qoi',
       description: 'Quite OK Image, sin perdida y muy simple.',
-      options: [
+      options: exportOptions([
         {
           id: 'colorspace',
           label: 'Espacio de color',
@@ -309,7 +424,7 @@
             { value: 'linear', label: 'Lineal' }
           ]
         }
-      ]
+      ])
     },
     {
       id: 'ppm',
@@ -318,10 +433,10 @@
       mime: 'image/x-portable-pixmap',
       encoder: 'ppm',
       description: 'Portable Pixmap RGB.',
-      options: [
+      options: exportOptions([
         { id: 'ascii', label: 'ASCII P3', type: 'checkbox', default: false },
         backgroundOption()
-      ]
+      ])
     },
     {
       id: 'pgm',
@@ -330,10 +445,10 @@
       mime: 'image/x-portable-graymap',
       encoder: 'pgm',
       description: 'Portable Graymap en escala de grises.',
-      options: [
+      options: exportOptions([
         { id: 'ascii', label: 'ASCII P2', type: 'checkbox', default: false },
         backgroundOption()
-      ]
+      ])
     },
     {
       id: 'pbm',
@@ -342,7 +457,7 @@
       mime: 'image/x-portable-bitmap',
       encoder: 'pbm',
       description: 'Portable Bitmap monocromo.',
-      options: [
+      options: exportOptions([
         { id: 'ascii', label: 'ASCII P1', type: 'checkbox', default: false },
         {
           id: 'threshold',
@@ -354,7 +469,7 @@
           default: 128
         },
         backgroundOption()
-      ]
+      ])
     },
     {
       id: 'xpm',
@@ -363,7 +478,17 @@
       mime: 'image/x-xpixmap',
       encoder: 'xpm',
       description: 'Pixmap textual C-style con paleta.',
-      options: [colorsOption(32, 256), transparencyOption(), alphaThresholdOption()]
+      options: exportOptions([
+        colorsOption(32, 256),
+        transparencyOption(),
+        alphaThresholdOption(),
+        {
+          id: 'variableName',
+          label: 'Variable C',
+          type: 'text',
+          default: 'hormi_image'
+        }
+      ])
     },
     {
       id: 'svg',
@@ -372,14 +497,16 @@
       mime: 'image/svg+xml',
       encoder: 'svg',
       description: 'SVG con la imagen PNG embebida en base64.',
-      options: [
+      options: exportOptions([
         {
           id: 'title',
           label: 'Titulo',
           type: 'text',
           default: ''
-        }
-      ]
+        },
+        flattenAlphaOption(false),
+        backgroundOption()
+      ])
     }
   ];
 

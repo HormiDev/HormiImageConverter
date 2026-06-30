@@ -17,6 +17,7 @@
     var bitDepth = Number(settings.bitDepth || 32);
     var bytesPerPixel = bitDepth === 32 ? 4 : 3;
     var background = Color.parseHexColor(settings.background || '#ffffff');
+    var topOrigin = settings.origin !== 'bottom';
     var out = new Uint8Array(18 + (imageData.width * imageData.height * bytesPerPixel));
     var offset = 0;
 
@@ -24,12 +25,13 @@
     Binary.writeU16LE(out, 12, imageData.width);
     Binary.writeU16LE(out, 14, imageData.height);
     out[16] = bitDepth;
-    out[17] = bitDepth === 32 ? 0x28 : 0x20;
+    out[17] = (topOrigin ? 0x20 : 0) | (bitDepth === 32 ? 8 : 0);
     offset = 18;
 
     for (var y = 0; y < imageData.height; y += 1) {
+      var sourceY = topOrigin ? y : (imageData.height - 1 - y);
       for (var x = 0; x < imageData.width; x += 1) {
-        var source = ((y * imageData.width) + x) * 4;
+        var source = ((sourceY * imageData.width) + x) * 4;
         var pixel = bitDepth === 32
           ? {
             r: imageData.data[source],

@@ -65,7 +65,14 @@
    * @returns {object} Entrada de salida.
    */
   function convertGifAnimation(rasters, options) {
-    var bytes = Hormi.Encoders.Gif.encodeAnimation(rasters, options);
+    var settings = Object.assign({}, options || {});
+    if (Hormi.Conversion.Resize && settings.keepResolution === false) {
+      var size = Hormi.Conversion.Resize.targetSize(rasters[0].imageData, settings);
+      settings.canvasMode = 'custom';
+      settings.frameWidth = size.width;
+      settings.frameHeight = size.height;
+    }
+    var bytes = Hormi.Encoders.Gif.encodeAnimation(rasters, settings);
     var blob = new Blob([bytes], { type: 'image/gif' });
     return {
       name: safeName(basename(rasters[0].name)) + '_animation.gif',

@@ -29,7 +29,9 @@ Usa la URL indicada como `Otro equipo`.
 1. Arrastra una o varias imagenes a la zona de entrada, o usa `Elegir archivos`.
 2. Selecciona el formato de salida.
 3. Ajusta las opciones del formato.
-4. Pulsa `Convertir`.
+4. Manten `Mantener resolucion original` activo para conservar el tamano de cada archivo.
+5. Desmarcalo si quieres desplegar ancho, alto, porcentaje y filtro de escala.
+6. Pulsa `Convertir`.
 
 La casilla `Empaquetar en ZIP` esta activada por defecto. Asi, incluso una sola imagen se descarga dentro de un `.zip`.
 

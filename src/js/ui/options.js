@@ -46,6 +46,28 @@
   }
 
   /**
+   * Crea un input numerico compacto.
+   *
+   * @param {object} option Definicion de opcion.
+   * @returns {HTMLElement} Control creado.
+   */
+  function numberControl(option) {
+    var wrap = element('label', 'option-row');
+    var span = element('span', 'option-label');
+    var input = document.createElement('input');
+    span.textContent = option.label;
+    input.type = 'number';
+    input.min = option.min;
+    input.max = option.max;
+    input.step = option.step || 1;
+    input.value = option.default;
+    input.dataset.optionId = option.id;
+    input.dataset.optionType = 'number';
+    wrap.append(span, input);
+    return wrap;
+  }
+
+  /**
    * Crea un input de color.
    *
    * @param {object} option Definicion de opcion.
@@ -133,19 +155,78 @@
    * @returns {HTMLElement} Control creado.
    */
   function optionControl(option) {
+    var control;
     if (option.type === 'range') {
-      return rangeControl(option);
+      control = rangeControl(option);
+    } else if (option.type === 'number') {
+      control = numberControl(option);
+    } else if (option.type === 'color') {
+      control = colorControl(option);
+    } else if (option.type === 'select') {
+      control = selectControl(option);
+    } else if (option.type === 'checkbox') {
+      control = checkboxControl(option);
+    } else {
+      control = textControl(option);
     }
-    if (option.type === 'color') {
-      return colorControl(option);
+
+    if (option.dependsOn) {
+      control.dataset.dependsId = option.dependsOn.id;
+      control.dataset.dependsValue = String(option.dependsOn.value);
     }
-    if (option.type === 'select') {
-      return selectControl(option);
+    return control;
+  }
+
+  /**
+   * Lee el valor actual de un control segun su tipo.
+   *
+   * @param {HTMLElement} input Control de opcion.
+   * @returns {string|boolean|number} Valor actual.
+   */
+  function inputValue(input) {
+    if (input.dataset.optionType === 'boolean') {
+      return input.checked;
     }
-    if (option.type === 'checkbox') {
-      return checkboxControl(option);
+    if (input.dataset.optionType === 'number') {
+      return Number(input.value);
     }
-    return textControl(option);
+    return input.value;
+  }
+
+  /**
+   * Actualiza visibilidad de controles condicionados.
+   *
+   * @param {HTMLElement} container Contenedor de opciones.
+   * @returns {void}
+   */
+  function updateDependencies(container) {
+    container.querySelectorAll('[data-depends-id]').forEach(function (row) {
+      var controller = container.querySelector('[data-option-id="' + row.dataset.dependsId + '"]');
+      var expected = row.dataset.dependsValue;
+      var visible = controller && String(inputValue(controller)) === expected;
+      row.hidden = !visible;
+    });
+  }
+
+  /**
+   * Conecta eventos para desplegar opciones dependientes.
+   *
+   * @param {HTMLElement} container Contenedor de opciones.
+   * @returns {void}
+   */
+  function bindOptionDependencies(container) {
+    if (container.dataset.dependenciesBound === 'true') {
+      updateDependencies(container);
+      return;
+    }
+    container.dataset.dependenciesBound = 'true';
+    container.addEventListener('input', function () {
+      updateDependencies(container);
+    });
+    container.addEventListener('change', function () {
+      updateDependencies(container);
+    });
+    updateDependencies(container);
   }
 
   /**
@@ -166,6 +247,7 @@
     format.options.forEach(function (option) {
       container.appendChild(optionControl(option));
     });
+    bindOptionDependencies(container);
   }
 
   /**

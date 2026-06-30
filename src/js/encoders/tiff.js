@@ -67,14 +67,15 @@
   }
 
   /**
-   * Escribe un racional TIFF 72/1.
+   * Escribe un racional TIFF para resolucion.
    *
    * @param {Uint8Array} out Buffer de salida.
    * @param {number} offset Posicion inicial.
+   * @param {number} dpi Resolucion en puntos por pulgada.
    * @returns {void}
    */
-  function writeResolution(out, offset) {
-    Binary.writeU32LE(out, offset, 72);
+  function writeResolution(out, offset, dpi) {
+    Binary.writeU32LE(out, offset, dpi);
     Binary.writeU32LE(out, offset + 4, 1);
   }
 
@@ -120,6 +121,8 @@
   function encodeTiff(imageData, options) {
     var settings = options || {};
     var preserveAlpha = settings.alphaMode === 'preserve';
+    var rawDpi = Math.round(Number(settings.dpi || 72));
+    var dpi = Number.isFinite(rawDpi) ? Math.max(1, Math.min(2400, rawDpi)) : 72;
     var samples = preserveAlpha ? 4 : 3;
     var pixelData = makeTiffPixels(imageData, samples, settings.background);
     var entries = [];
@@ -160,8 +163,8 @@
     }
     Binary.writeU32LE(out, offset, 0);
     writeShortArray(out, bitsOffset, new Array(samples).fill(8));
-    writeResolution(out, xResolutionOffset);
-    writeResolution(out, yResolutionOffset);
+    writeResolution(out, xResolutionOffset, dpi);
+    writeResolution(out, yResolutionOffset, dpi);
     out.set(pixelData, pixelOffset);
     return out;
   }

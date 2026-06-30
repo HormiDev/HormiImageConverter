@@ -37,6 +37,7 @@ function loadScript(relative) {
   'src/js/encoders/ico.js',
   'src/js/encoders/tiff.js',
   'src/js/formats/catalog.js',
+  'src/js/conversion/resize.js',
   'src/js/encoders/registry.js',
   'src/js/conversion/converter.js'
 ].forEach(loadScript);
@@ -99,6 +100,17 @@ function assertRgbImage(actual, expected) {
  */
 function u16(bytes, offset) {
   return bytes[offset] | (bytes[offset + 1] << 8);
+}
+
+/**
+ * Lee un entero little-endian de 32 bits.
+ *
+ * @param {Uint8Array} bytes Bytes de entrada.
+ * @param {number} offset Posicion de lectura.
+ * @returns {number} Valor leido.
+ */
+function u32(bytes, offset) {
+  return Hormi.Core.Binary.readU32LE(bytes, offset);
 }
 
 /**
@@ -276,6 +288,26 @@ await test('QOI exporta e importa sin perdida', () => {
   assertExactImage(decoded, image);
 });
 
+await test('Redimensionado comun cambia dimensiones antes de exportar', async () => {
+  const image = fixtureImage();
+  const blob = await Hormi.Encoders.encode('qoi', {
+    name: 'demo.png',
+    width: image.width,
+    height: image.height,
+    imageData: image
+  }, {
+    keepResolution: false,
+    resizeMode: 'exact',
+    resizeWidth: 2,
+    resizeHeight: 2,
+    resizeFilter: 'nearest'
+  });
+  const decoded = Hormi.Importers.Qoi.decode(await blobBytes(blob));
+  assert.equal(decoded.width, 2);
+  assert.equal(decoded.height, 2);
+  assert.equal(decoded.data.length, 2 * 2 * 4);
+});
+
 await test('BMP 32 bits exporta e importa RGBA', () => {
   const image = fixtureImage();
   const encoded = Hormi.Encoders.Bmp.encode(image, { bitDepth: 32 });
@@ -286,6 +318,14 @@ await test('BMP 32 bits exporta e importa RGBA', () => {
 await test('TGA 32 bits exporta e importa RGBA', () => {
   const image = fixtureImage();
   const encoded = Hormi.Encoders.Tga.encode(image, { bitDepth: 32 });
+  const decoded = Hormi.Importers.Tga.decode(encoded);
+  assertExactImage(decoded, image);
+});
+
+await test('TGA con origen inferior mantiene la imagen al importar', () => {
+  const image = fixtureImage();
+  const encoded = Hormi.Encoders.Tga.encode(image, { bitDepth: 32, origin: 'bottom' });
+  assert.equal((encoded[17] & 0x20), 0);
   const decoded = Hormi.Importers.Tga.decode(encoded);
   assertExactImage(decoded, image);
 });
@@ -322,6 +362,13 @@ await test('XPM exporta e importa transparencia basica', () => {
   assert.equal(decoded.width, image.width);
   assert.equal(decoded.height, image.height);
   assert.equal(decoded.data[8 * 4 + 3], 0);
+});
+
+await test('XPM permite nombre de variable C saneado', () => {
+  const image = fixtureImage();
+  const encoded = Hormi.Encoders.Xpm.encode(image, { colors: 16, variableName: 'icon demo' });
+  const text = Hormi.Core.Binary.utf8Text(encoded);
+  assert.ok(text.includes('static char * icon_demo[]'));
 });
 
 await test('GIF genera cabecera, dimensiones y cierre validos', () => {
@@ -402,12 +449,35 @@ await test('ICO genera directorio y DIB de icono', () => {
   assert.equal(encoded[7], 32);
 });
 
+await test('ICO usa la resolucion actual por defecto si cabe en el formato', () => {
+  const image = fixtureImage();
+  const encoded = Hormi.Encoders.Ico.encode(image, { size: 'source' });
+  assert.equal(encoded[6], image.width);
+  assert.equal(encoded[7], image.height);
+});
+
 await test('TIFF genera cabecera little-endian baseline', () => {
   const image = fixtureImage();
   const encoded = Hormi.Encoders.Tiff.encode(image, { alphaMode: 'preserve' });
   assert.equal(encoded[0], 0x49);
   assert.equal(encoded[1], 0x49);
   assert.equal(u16(encoded, 2), 42);
+});
+
+await test('TIFF escribe DPI configurable', () => {
+  const image = fixtureImage();
+  const encoded = Hormi.Encoders.Tiff.encode(image, { alphaMode: 'flatten', dpi: 300 });
+  const ifdOffset = u32(encoded, 4);
+  const entries = u16(encoded, ifdOffset);
+  let xResolutionOffset = 0;
+  for (let i = 0; i < entries; i += 1) {
+    const entryOffset = ifdOffset + 2 + (i * 12);
+    if (u16(encoded, entryOffset) === 282) {
+      xResolutionOffset = u32(encoded, entryOffset + 8);
+    }
+  }
+  assert.equal(u32(encoded, xResolutionOffset), 300);
+  assert.equal(u32(encoded, xResolutionOffset + 4), 1);
 });
 
 await test('ZIP empaqueta entradas sin compresion', async () => {

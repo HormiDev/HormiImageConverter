@@ -25,6 +25,20 @@
   }
 
   /**
+   * Prepara un raster antes de codificarlo.
+   *
+   * @param {object} raster Imagen cargada.
+   * @param {object} options Opciones de exportacion.
+   * @returns {object} Raster procesado.
+   */
+  function preparedRaster(raster, options) {
+    if (Hormi.Conversion.Resize) {
+      return Hormi.Conversion.Resize.apply(raster, options);
+    }
+    return raster;
+  }
+
+  /**
    * Codifica una imagen usando el formato elegido.
    *
    * @param {string} formatId Identificador de formato.
@@ -42,41 +56,43 @@
       mime: format.mime
     });
 
+    var prepared = preparedRaster(raster, settings);
+
     if (format.encoder === 'native') {
-      return Hormi.Encoders.Native.encode(raster, settings);
+      return Hormi.Encoders.Native.encode(prepared, settings);
     }
     if (format.encoder === 'gif') {
-      return blobFromBytes(Hormi.Encoders.Gif.encode(imageDataOf(raster), settings), format.mime);
+      return blobFromBytes(Hormi.Encoders.Gif.encode(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'bmp') {
-      return blobFromBytes(Hormi.Encoders.Bmp.encode(imageDataOf(raster), settings), format.mime);
+      return blobFromBytes(Hormi.Encoders.Bmp.encode(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'ico') {
-      return blobFromBytes(Hormi.Encoders.Ico.encode(imageDataOf(raster), settings), format.mime);
+      return blobFromBytes(Hormi.Encoders.Ico.encode(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'tiff') {
-      return blobFromBytes(Hormi.Encoders.Tiff.encode(imageDataOf(raster), settings), format.mime);
+      return blobFromBytes(Hormi.Encoders.Tiff.encode(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'tga') {
-      return blobFromBytes(Hormi.Encoders.Tga.encode(imageDataOf(raster), settings), format.mime);
+      return blobFromBytes(Hormi.Encoders.Tga.encode(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'qoi') {
-      return blobFromBytes(Hormi.Encoders.Qoi.encode(imageDataOf(raster), settings), format.mime);
+      return blobFromBytes(Hormi.Encoders.Qoi.encode(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'ppm') {
-      return blobFromBytes(Hormi.Encoders.Netpbm.encodePpm(imageDataOf(raster), settings), format.mime);
+      return blobFromBytes(Hormi.Encoders.Netpbm.encodePpm(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'pgm') {
-      return blobFromBytes(Hormi.Encoders.Netpbm.encodePgm(imageDataOf(raster), settings), format.mime);
+      return blobFromBytes(Hormi.Encoders.Netpbm.encodePgm(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'pbm') {
-      return blobFromBytes(Hormi.Encoders.Netpbm.encodePbm(imageDataOf(raster), settings), format.mime);
+      return blobFromBytes(Hormi.Encoders.Netpbm.encodePbm(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'xpm') {
-      return blobFromBytes(Hormi.Encoders.Xpm.encode(imageDataOf(raster), settings), format.mime);
+      return blobFromBytes(Hormi.Encoders.Xpm.encode(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'svg') {
-      return Hormi.Encoders.Svg.encode(raster, settings);
+      return Hormi.Encoders.Svg.encode(prepared, settings);
     }
 
     throw new Error('Codificador no implementado: ' + format.encoder);

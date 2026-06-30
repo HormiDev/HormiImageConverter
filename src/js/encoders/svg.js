@@ -27,7 +27,10 @@
    */
   async function encodeSvg(raster, options) {
     var settings = options || {};
-    var pngBlob = await Hormi.Encoders.Native.canvasToBlob(raster.canvas, 'image/png');
+    var sourceCanvas = settings.flattenAlpha
+      ? Hormi.Encoders.Native.opaqueCanvas(raster, settings.background || '#ffffff')
+      : raster.canvas;
+    var pngBlob = await Hormi.Encoders.Native.canvasToBlob(sourceCanvas, 'image/png');
     var pngBytes = new Uint8Array(await pngBlob.arrayBuffer());
     var title = settings.title || raster.name || 'imagen';
     var svg = [
