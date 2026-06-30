@@ -19,6 +19,45 @@
   }
 
   /**
+   * Traduce una etiqueta de opcion.
+   *
+   * @param {object} item Definicion con clave de traduccion.
+   * @returns {string} Etiqueta visible.
+   */
+  function labelText(item) {
+    return Hormi.I18n.t(item.labelKey, null, item.label);
+  }
+
+  /**
+   * Aplica un valor ya elegido a un control recien renderizado.
+   *
+   * @param {HTMLElement} control Control contenedor.
+   * @param {object} option Definicion de opcion.
+   * @param {object} values Valores previos.
+   * @returns {void}
+   */
+  function restoreValue(control, option, values) {
+    var input;
+    var output;
+    if (!values || !Object.prototype.hasOwnProperty.call(values, option.id)) {
+      return;
+    }
+    input = control.querySelector('[data-option-id="' + option.id + '"]');
+    if (!input) {
+      return;
+    }
+    if (input.dataset.optionType === 'boolean') {
+      input.checked = Boolean(values[option.id]);
+    } else {
+      input.value = values[option.id];
+    }
+    output = control.querySelector('output');
+    if (output) {
+      output.value = input.value;
+    }
+  }
+
+  /**
    * Crea un input numerico tipo rango con lectura visible.
    *
    * @param {object} option Definicion de opcion.
@@ -40,7 +79,7 @@
     input.addEventListener('input', function () {
       value.value = input.value;
     });
-    span.textContent = option.label;
+    span.textContent = labelText(option);
     wrap.append(span, input, value);
     return wrap;
   }
@@ -55,7 +94,7 @@
     var wrap = element('label', 'option-row');
     var span = element('span', 'option-label');
     var input = document.createElement('input');
-    span.textContent = option.label;
+    span.textContent = labelText(option);
     input.type = 'number';
     input.min = option.min;
     input.max = option.max;
@@ -77,7 +116,7 @@
     var wrap = element('label', 'option-row option-row--color');
     var span = element('span', 'option-label');
     var input = document.createElement('input');
-    span.textContent = option.label;
+    span.textContent = labelText(option);
     input.type = 'color';
     input.value = option.default;
     input.dataset.optionId = option.id;
@@ -96,13 +135,13 @@
     var wrap = element('label', 'option-row');
     var span = element('span', 'option-label');
     var select = document.createElement('select');
-    span.textContent = option.label;
+    span.textContent = labelText(option);
     select.dataset.optionId = option.id;
     select.dataset.optionType = 'string';
     option.choices.forEach(function (choice) {
       var item = document.createElement('option');
       item.value = choice.value;
-      item.textContent = choice.label;
+      item.textContent = labelText(choice);
       select.appendChild(item);
     });
     select.value = option.default;
@@ -124,7 +163,7 @@
     input.checked = Boolean(option.default);
     input.dataset.optionId = option.id;
     input.dataset.optionType = 'boolean';
-    span.textContent = option.label;
+    span.textContent = labelText(option);
     wrap.append(input, span);
     return wrap;
   }
@@ -139,7 +178,7 @@
     var wrap = element('label', 'option-row');
     var span = element('span', 'option-label');
     var input = document.createElement('input');
-    span.textContent = option.label;
+    span.textContent = labelText(option);
     input.type = 'text';
     input.value = option.default || '';
     input.dataset.optionId = option.id;
@@ -154,7 +193,7 @@
    * @param {object} option Definicion de opcion.
    * @returns {HTMLElement} Control creado.
    */
-  function optionControl(option) {
+  function optionControl(option, values) {
     var control;
     if (option.type === 'range') {
       control = rangeControl(option);
@@ -174,6 +213,7 @@
       control.dataset.dependsId = option.dependsOn.id;
       control.dataset.dependsValue = String(option.dependsOn.value);
     }
+    restoreValue(control, option, values);
     return control;
   }
 
@@ -234,18 +274,19 @@
    *
    * @param {HTMLElement} container Contenedor destino.
    * @param {object} format Formato seleccionado.
+   * @param {object} values Valores previos.
    * @returns {void}
    */
-  function renderFormatOptions(container, format) {
+  function renderFormatOptions(container, format, values) {
     container.replaceChildren();
     if (!format.options.length) {
       var empty = element('p', 'empty-options');
-      empty.textContent = 'Sin opciones adicionales';
+      empty.textContent = Hormi.I18n.t('options.empty');
       container.appendChild(empty);
       return;
     }
     format.options.forEach(function (option) {
-      container.appendChild(optionControl(option));
+      container.appendChild(optionControl(option, values));
     });
     bindOptionDependencies(container);
   }

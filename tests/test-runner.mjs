@@ -18,6 +18,7 @@ function loadScript(relative) {
 
 [
   'src/js/core/namespace.js',
+  'src/js/core/i18n.js',
   'src/js/core/binary.js',
   'src/js/core/color.js',
   'src/js/core/palette.js',

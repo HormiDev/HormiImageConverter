@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es" data-theme="dark">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,12 +8,12 @@
 </head>
 <body>
   <main class="app-shell">
-    <section class="workspace" aria-label="Conversor de imagenes">
+    <section class="workspace" aria-label="Image converter" data-i18n-aria-label="app.aria">
       <header class="topbar">
         <div>
           <h1>Hormi Image Converter</h1>
           <p class="subtitle">PNG - JPG - WebP - AVIF - GIF - BMP - ICO - TIFF - TGA - QOI - PPM - PGM - PBM - XPM - SVG</p>
-          <a class="repo-link" href="https://github.com/HormiDev/HormiImageConverter" target="_blank" rel="noopener noreferrer" aria-label="Repositorio oficial en GitHub">
+          <a class="repo-link" href="https://github.com/HormiDev/HormiImageConverter" target="_blank" rel="noopener noreferrer" aria-label="Official GitHub repository" data-i18n-aria-label="repo.aria">
             <img
               class="repo-link__avatar"
               src="https://github.com/HormiDev.png?size=48"
@@ -29,7 +29,18 @@
           </a>
         </div>
         <div class="topbar__actions">
-          <button class="theme-switch" type="button" data-theme-toggle aria-label="Cambiar a tema claro" aria-pressed="false">
+          <label class="language-control" data-language-control data-language="en">
+            <span class="language-control__label" data-i18n="language.label">Language</span>
+            <span class="language-control__row">
+              <span class="language-flag" data-language-flag aria-hidden="true"></span>
+              <select data-language-select aria-label="Select interface language" data-i18n-aria-label="language.aria">
+                <option value="en">En</option>
+                <option value="es">Es</option>
+                <option value="fr">Fr</option>
+              </select>
+            </span>
+          </label>
+          <button class="theme-switch" type="button" data-theme-toggle aria-label="Switch to light theme" data-i18n-aria-label="theme.toLight" aria-pressed="false">
             <span class="theme-switch__track">
               <span class="theme-switch__icon theme-switch__icon--sun" aria-hidden="true">
                 <svg viewBox="0 0 24 24">
@@ -45,31 +56,31 @@
               <span class="theme-switch__thumb"></span>
             </span>
           </button>
-          <button class="button button--ghost" type="button" data-clear-button disabled>Vaciar</button>
-          <button class="button button--primary" type="button" data-convert-button disabled>Convertir</button>
+          <button class="button button--ghost" type="button" data-clear-button data-i18n="action.clear" disabled>Clear</button>
+          <button class="button button--primary" type="button" data-convert-button data-i18n="action.convert" disabled>Convert</button>
         </div>
       </header>
 
       <details class="manual-panel">
         <summary>
-          <span>Manual rapido</span>
-          <span class="manual-panel__hint">Ver pasos</span>
+          <span data-i18n="manual.title">Quick manual</span>
+          <span class="manual-panel__hint" data-i18n="manual.hint">View steps</span>
         </summary>
         <div class="manual-panel__content">
           <ol>
-            <li>Arrastra una o varias imagenes a la zona de entrada o pulsa <strong>Elegir archivos</strong>.</li>
-            <li>Selecciona el formato de salida en el panel de exportacion.</li>
-            <li>Ajusta las opciones del formato, como resolucion, calidad, fondo, alfa, paleta o profundidad.</li>
-            <li>Deja <strong>Mantener resolucion original</strong> activo o desmarcalo para cambiar tamano.</li>
-            <li>Deja <strong>Empaquetar en ZIP</strong> activo si quieres descargar todo en un unico archivo.</li>
-            <li>Pulsa <strong>Convertir</strong> y espera a que termine la descarga.</li>
+            <li data-i18n-html="manual.step1">Drag one or more images into the input area or press <strong>Choose files</strong>.</li>
+            <li data-i18n-html="manual.step2">Select the output format in the export panel.</li>
+            <li data-i18n-html="manual.step3">Adjust format options such as resolution, quality, background, alpha, palette, or depth.</li>
+            <li data-i18n-html="manual.step4">Leave <strong>Keep original resolution</strong> enabled or disable it to change size.</li>
+            <li data-i18n-html="manual.step5">Leave <strong>Package as ZIP</strong> enabled if you want to download everything in a single file.</li>
+            <li data-i18n-html="manual.step6">Press <strong>Convert</strong> and wait for the download to finish.</li>
           </ol>
-          <p>La app funciona localmente. Los formatos nativos dependen del navegador y los formatos especiales usan codificadores incluidos en el proyecto.</p>
+          <p data-i18n="manual.body">The app runs locally. Native formats depend on the browser, and special formats use encoders included in the project.</p>
         </div>
       </details>
 
       <div class="tool-grid">
-        <section class="input-pane" aria-label="Entrada">
+        <section class="input-pane" aria-label="Input" data-i18n-aria-label="pane.input">
           <div class="drop-zone" data-drop-zone>
             <input
               class="file-input"
@@ -80,17 +91,17 @@
             >
             <div class="drop-zone__inner">
               <span class="drop-zone__mark">+</span>
-              <strong>Soltar imagenes</strong>
-              <button class="button button--secondary" type="button" data-pick-button>Elegir archivos</button>
+              <strong data-i18n="drop.title">Drop images</strong>
+              <button class="button button--secondary" type="button" data-pick-button data-i18n="drop.pick">Choose files</button>
             </div>
           </div>
 
           <div class="image-list" data-image-list></div>
         </section>
 
-        <aside class="settings-pane" aria-label="Exportacion">
+        <aside class="settings-pane" aria-label="Export" data-i18n-aria-label="pane.export">
           <label class="field">
-            <span>Formato</span>
+            <span data-i18n="field.format">Format</span>
             <select data-format-select></select>
           </label>
           <p class="format-description" data-format-description></p>
@@ -99,12 +110,12 @@
 
           <label class="zip-toggle">
             <input type="checkbox" data-zip-toggle checked>
-            <span>Empaquetar en ZIP</span>
+            <span data-i18n="zip.label">Package as ZIP</span>
           </label>
 
           <div class="status-box">
             <progress value="0" max="100" data-progress></progress>
-            <span data-status>Preparado</span>
+            <span data-status>Ready</span>
           </div>
 
           <ul class="output-list" data-output-list></ul>
@@ -114,6 +125,7 @@
   </main>
 
   <script src="./js/core/namespace.js"></script>
+  <script src="./js/core/i18n.js"></script>
   <script src="./js/core/binary.js"></script>
   <script src="./js/core/color.js"></script>
   <script src="./js/core/palette.js"></script>

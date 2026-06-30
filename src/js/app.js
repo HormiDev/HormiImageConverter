@@ -5,7 +5,9 @@
 
   var state = {
     rasters: [],
-    formatId: 'png'
+    formatId: 'png',
+    statusKey: 'status.ready',
+    statusParams: {}
   };
 
   /**
@@ -18,6 +20,8 @@
       dropZone: document.querySelector('[data-drop-zone]'),
       fileInput: document.querySelector('[data-file-input]'),
       pickButton: document.querySelector('[data-pick-button]'),
+      languageControl: document.querySelector('[data-language-control]'),
+      languageSelect: document.querySelector('[data-language-select]'),
       themeToggle: document.querySelector('[data-theme-toggle]'),
       clearButton: document.querySelector('[data-clear-button]'),
       imageList: document.querySelector('[data-image-list]'),
@@ -36,11 +40,24 @@
    * Escribe un mensaje breve de estado.
    *
    * @param {object} refs Referencias DOM.
-   * @param {string} message Mensaje visible.
+   * @param {string} key Clave de traduccion.
+   * @param {object} params Parametros del mensaje.
    * @returns {void}
    */
-  function setStatus(refs, message) {
-    refs.status.textContent = message;
+  function setStatus(refs, key, params) {
+    state.statusKey = key;
+    state.statusParams = params || {};
+    refs.status.textContent = Hormi.I18n.t(state.statusKey, state.statusParams);
+  }
+
+  /**
+   * Vuelve a traducir el ultimo mensaje de estado.
+   *
+   * @param {object} refs Referencias DOM.
+   * @returns {void}
+   */
+  function renderStatus(refs) {
+    refs.status.textContent = Hormi.I18n.t(state.statusKey, state.statusParams);
   }
 
   /**
@@ -96,7 +113,7 @@
     document.documentElement.dataset.theme = nextTheme;
     refs.themeToggle.setAttribute(
       'aria-label',
-      nextTheme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'
+      Hormi.I18n.t(nextTheme === 'dark' ? 'theme.toLight' : 'theme.toDark')
     );
     refs.themeToggle.setAttribute('aria-pressed', nextTheme === 'light' ? 'true' : 'false');
     saveTheme(nextTheme);
@@ -133,12 +150,13 @@
    * Renderiza las opciones asociadas al formato actual.
    *
    * @param {object} refs Referencias DOM.
+   * @param {object} values Valores de opciones ya elegidos.
    * @returns {void}
    */
-  function renderSelectedFormat(refs) {
+  function renderSelectedFormat(refs, values) {
     var format = Hormi.Formats.byId(state.formatId);
-    refs.formatDescription.textContent = format.description;
-    Hormi.UI.Options.renderFormatOptions(refs.options, format);
+    refs.formatDescription.textContent = Hormi.I18n.t(format.descriptionKey, null, format.description);
+    Hormi.UI.Options.renderFormatOptions(refs.options, format, values);
   }
 
   /**
@@ -159,6 +177,40 @@
   }
 
   /**
+   * Aplica el idioma visual y vuelve a pintar los textos dinamicos.
+   *
+   * @param {object} refs Referencias DOM.
+   * @param {string} language Idioma elegido.
+   * @param {boolean} persist Si debe persistirse.
+   * @returns {void}
+   */
+  function applyLanguage(refs, language, persist) {
+    var optionValues = Hormi.UI.Options.readOptions(refs.options);
+    var nextLanguage = Hormi.I18n.setLanguage(language, persist);
+    if (refs.languageSelect) {
+      refs.languageSelect.value = nextLanguage;
+    }
+    if (refs.languageControl) {
+      refs.languageControl.dataset.language = nextLanguage;
+    }
+    Hormi.I18n.translateDocument(document);
+    applyTheme(refs, document.documentElement.dataset.theme);
+    renderSelectedFormat(refs, optionValues);
+    renderState(refs);
+    renderStatus(refs);
+  }
+
+  /**
+   * Elige la clave de estado correcta para una cantidad de imagenes.
+   *
+   * @param {number} count Cantidad de imagenes listas.
+   * @returns {string} Clave de traduccion.
+   */
+  function imagesReadyKey(count) {
+    return count === 1 ? 'status.imageReady' : 'status.imagesReady';
+  }
+
+  /**
    * Carga una lista de archivos seleccionados.
    *
    * @param {object} refs Referencias DOM.
@@ -172,16 +224,16 @@
     }
     setProgress(refs, 0, list.length);
     for (var i = 0; i < list.length; i += 1) {
-      setStatus(refs, 'Cargando ' + list[i].name);
+      setStatus(refs, 'status.loading', { name: list[i].name });
       try {
         state.rasters.push(await Hormi.Conversion.FileLoader.loadFile(list[i]));
       } catch (error) {
-        setStatus(refs, 'No se pudo cargar ' + list[i].name + ': ' + error.message);
+        setStatus(refs, 'status.loadError', { name: list[i].name, message: error.message });
       }
       setProgress(refs, i + 1, list.length);
       renderState(refs);
     }
-    setStatus(refs, state.rasters.length + ' imagen(es) listas');
+    setStatus(refs, imagesReadyKey(state.rasters.length), { count: state.rasters.length });
   }
 
   /**
@@ -228,7 +280,7 @@
   async function convertAndDownload(refs) {
     refs.convertButton.disabled = true;
     setProgress(refs, 0, state.rasters.length);
-    setStatus(refs, 'Convirtiendo');
+    setStatus(refs, 'status.converting');
     refs.outputList.replaceChildren();
 
     try {
@@ -240,7 +292,7 @@
         function (done, total, raster) {
           setProgress(refs, done, total);
           if (raster) {
-            setStatus(refs, 'Convirtiendo ' + raster.name);
+            setStatus(refs, 'status.convertingFile', { name: raster.name });
           }
         }
       );
@@ -255,9 +307,9 @@
         Hormi.Conversion.Converter.downloadBlob(outputs[0].blob, outputs[0].name);
       }
       setProgress(refs, state.rasters.length, state.rasters.length);
-      setStatus(refs, 'Exportacion completada');
+      setStatus(refs, 'status.done');
     } catch (error) {
-      setStatus(refs, 'Error: ' + error.message);
+      setStatus(refs, 'status.error', { message: error.message });
     } finally {
       refs.convertButton.disabled = state.rasters.length === 0;
     }
@@ -272,6 +324,9 @@
   function bindEvents(refs) {
     refs.themeToggle.addEventListener('click', function () {
       toggleTheme(refs);
+    });
+    refs.languageSelect.addEventListener('change', function () {
+      applyLanguage(refs, refs.languageSelect.value, true);
     });
     refs.pickButton.addEventListener('click', function () {
       refs.fileInput.click();
@@ -291,7 +346,7 @@
       state.rasters = [];
       refs.outputList.replaceChildren();
       setProgress(refs, 0, 1);
-      setStatus(refs, 'Lista vacia');
+      setStatus(refs, 'status.empty');
       renderState(refs);
     });
     refs.convertButton.addEventListener('click', function () {
@@ -310,8 +365,9 @@
     populateFormats(refs.formatSelect);
     renderSelectedFormat(refs);
     renderState(refs);
+    applyLanguage(refs, Hormi.I18n.savedLanguage(), false);
     bindEvents(refs);
-    setStatus(refs, 'Preparado');
+    renderStatus(refs);
   }
 
   document.addEventListener('DOMContentLoaded', init);

@@ -54,7 +54,7 @@
     name.textContent = raster.name;
     meta.textContent = raster.width + ' x ' + raster.height + ' px';
     remove.type = 'button';
-    remove.textContent = 'Quitar';
+    remove.textContent = Hormi.I18n.t('gallery.remove');
     remove.addEventListener('click', function () {
       onRemove(raster.id);
     });
@@ -76,7 +76,7 @@
     container.replaceChildren();
     if (!rasters.length) {
       var empty = element('p', 'empty-gallery');
-      empty.textContent = 'Sin imagenes cargadas';
+      empty.textContent = Hormi.I18n.t('gallery.empty');
       container.appendChild(empty);
       return;
     }

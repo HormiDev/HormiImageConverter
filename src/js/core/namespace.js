@@ -12,6 +12,7 @@
       Encoders: {},
       Importers: {},
       Conversion: {},
+      I18n: {},
       UI: {},
       Zip: {},
       Formats: {}

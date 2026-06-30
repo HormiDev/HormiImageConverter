@@ -192,9 +192,66 @@ button:disabled {
 
 .topbar__actions {
   display: flex;
+  align-items: flex-end;
   gap: 10px;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.language-control {
+  display: grid;
+  width: 92px;
+  min-width: 92px;
+  gap: 5px;
+}
+
+.language-control__label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.language-control__row {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+}
+
+.language-flag {
+  width: 24px;
+  height: 16px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--panel-soft);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.22);
+}
+
+.language-control[data-language="en"] .language-flag {
+  background:
+    linear-gradient(0deg, transparent 46%, #c8102e 46% 54%, transparent 54%),
+    linear-gradient(90deg, transparent 46%, #c8102e 46% 54%, transparent 54%),
+    linear-gradient(0deg, transparent 40%, #ffffff 40% 60%, transparent 60%),
+    linear-gradient(90deg, transparent 40%, #ffffff 40% 60%, transparent 60%),
+    linear-gradient(32deg, transparent 47%, #c8102e 47% 53%, transparent 53%),
+    linear-gradient(-32deg, transparent 47%, #c8102e 47% 53%, transparent 53%),
+    linear-gradient(32deg, transparent 42%, #ffffff 42% 58%, transparent 58%),
+    linear-gradient(-32deg, transparent 42%, #ffffff 42% 58%, transparent 58%),
+    #012169;
+}
+
+.language-control[data-language="es"] .language-flag {
+  background: linear-gradient(180deg, #c60b1e 0 25%, #ffc400 25% 75%, #c60b1e 75%);
+}
+
+.language-control[data-language="fr"] .language-flag {
+  background: linear-gradient(90deg, #0055a4 0 33%, #ffffff 33% 67%, #ef4135 67%);
+}
+
+.language-control select {
+  min-height: 40px;
+  padding: 0 6px;
 }
 
 .manual-panel {
