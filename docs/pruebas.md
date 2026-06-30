@@ -23,7 +23,9 @@ Las pruebas cargan los scripts clasicos en Node, generan una imagen RGBA pequena
 - Importacion de dimensiones en `PGM`.
 - Monocromo valido en `PBM`.
 - Transparencia basica en `XPM`.
-- Cabecera y cierre de `GIF`.
+- Flujo LZW, cabecera y cierre de `GIF`.
+- GIF animado con varios fotogramas y lienzo comun.
+- Agrupacion de varias imagenes como una unica animacion GIF desde el conversor.
 - Directorio basico de `ICO`.
 - Cabecera baseline de `TIFF`.
 - Estructura local y central de `ZIP`.

@@ -15,7 +15,7 @@ Los helpers de `src/js/core/binary.js` escriben enteros little-endian y big-endi
 ## Formatos implementados
 
 - `BMP`: BITMAPINFOHEADER de 40 bytes, 24 o 32 bits, sin compresion.
-- `GIF`: GIF89a estatico, tabla global y LZW.
+- `GIF`: GIF89a estatico o animado, tabla global y LZW compatible con reinicios.
 - `ICO`: contenedor ICO con un DIB BGRA de una resolucion.
 - `TIFF`: baseline little-endian, RGB/RGBA, sin compresion.
 - `TGA`: true-color sin compresion, origen superior.

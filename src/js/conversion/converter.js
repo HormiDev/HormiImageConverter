@@ -58,6 +58,24 @@
   }
 
   /**
+   * Codifica varias imagenes como una unica animacion GIF.
+   *
+   * @param {object[]} rasters Imagenes cargadas.
+   * @param {object} options Opciones de animacion.
+   * @returns {object} Entrada de salida.
+   */
+  function convertGifAnimation(rasters, options) {
+    var bytes = Hormi.Encoders.Gif.encodeAnimation(rasters, options);
+    var blob = new Blob([bytes], { type: 'image/gif' });
+    return {
+      name: safeName(basename(rasters[0].name)) + '_animation.gif',
+      blob: blob,
+      mime: 'image/gif',
+      size: blob.size
+    };
+  }
+
+  /**
    * Convierte una lista de imagenes al mismo formato.
    *
    * @param {object[]} rasters Imagenes cargadas.
@@ -68,6 +86,17 @@
    */
   async function convertMany(rasters, formatId, options, onProgress) {
     var outputs = [];
+    if (formatId === 'gif' && rasters.length > 1 && options && options.gifMode !== 'individual') {
+      if (onProgress) {
+        onProgress(0, rasters.length, rasters[0]);
+      }
+      outputs.push(convertGifAnimation(rasters, options));
+      if (onProgress) {
+        onProgress(rasters.length, rasters.length, null);
+      }
+      return outputs;
+    }
+
     for (var i = 0; i < rasters.length; i += 1) {
       if (onProgress) {
         onProgress(i, rasters.length, rasters[i]);

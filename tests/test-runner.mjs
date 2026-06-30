@@ -37,7 +37,8 @@ function loadScript(relative) {
   'src/js/encoders/ico.js',
   'src/js/encoders/tiff.js',
   'src/js/formats/catalog.js',
-  'src/js/encoders/registry.js'
+  'src/js/encoders/registry.js',
+  'src/js/conversion/converter.js'
 ].forEach(loadScript);
 
 const { Hormi } = globalThis;
@@ -108,6 +109,152 @@ function u16(bytes, offset) {
  */
 async function blobBytes(blob) {
   return new Uint8Array(await blob.arrayBuffer());
+}
+
+/**
+ * Lee los subbloques GIF desde una posicion.
+ *
+ * @param {Uint8Array} bytes Bytes GIF.
+ * @param {number} offset Posicion inicial.
+ * @returns {{data:Uint8Array,offset:number}} Datos unidos y nueva posicion.
+ */
+function readGifSubBlocks(bytes, offset) {
+  const parts = [];
+  let total = 0;
+  let cursor = offset;
+  while (bytes[cursor] !== 0) {
+    const size = bytes[cursor];
+    const chunk = bytes.subarray(cursor + 1, cursor + 1 + size);
+    parts.push(chunk);
+    total += chunk.length;
+    cursor += 1 + size;
+  }
+  const data = new Uint8Array(total);
+  let target = 0;
+  for (const part of parts) {
+    data.set(part, target);
+    target += part.length;
+  }
+  return { data, offset: cursor + 1 };
+}
+
+/**
+ * Decodifica el flujo LZW de un fotograma GIF.
+ *
+ * @param {Uint8Array} data Datos LZW empaquetados.
+ * @param {number} minCodeSize Tamano minimo de codigo.
+ * @param {number} expectedPixels Pixeles esperados.
+ * @returns {number[]} Pixeles indexados.
+ */
+function decodeGifLzw(data, minCodeSize, expectedPixels) {
+  const clearCode = 1 << minCodeSize;
+  const endCode = clearCode + 1;
+  let codeSize = minCodeSize + 1;
+  let nextCode = endCode + 1;
+  let bitOffset = 0;
+  let oldCode = null;
+  let dictionary = [];
+  const pixels = [];
+
+  function resetDictionary() {
+    dictionary = [];
+    for (let i = 0; i < clearCode; i += 1) {
+      dictionary[i] = [i];
+    }
+    dictionary[clearCode] = null;
+    dictionary[endCode] = null;
+    codeSize = minCodeSize + 1;
+    nextCode = endCode + 1;
+    oldCode = null;
+  }
+
+  function readCode() {
+    let code = 0;
+    for (let bit = 0; bit < codeSize; bit += 1) {
+      const byte = data[Math.floor(bitOffset / 8)] || 0;
+      code |= ((byte >> (bitOffset % 8)) & 1) << bit;
+      bitOffset += 1;
+    }
+    return code;
+  }
+
+  resetDictionary();
+  while (pixels.length < expectedPixels && bitOffset < data.length * 8) {
+    const code = readCode();
+    if (code === clearCode) {
+      resetDictionary();
+      continue;
+    }
+    if (code === endCode) {
+      break;
+    }
+
+    let entry;
+    if (dictionary[code]) {
+      entry = dictionary[code].slice();
+    } else if (code === nextCode && oldCode !== null) {
+      entry = dictionary[oldCode].concat(dictionary[oldCode][0]);
+    } else {
+      throw new Error('Codigo LZW GIF invalido');
+    }
+
+    pixels.push(...entry);
+    if (oldCode === null) {
+      oldCode = code;
+      continue;
+    }
+
+    dictionary[nextCode] = dictionary[oldCode].concat(entry[0]);
+    nextCode += 1;
+    if (nextCode === (1 << codeSize) && codeSize < 12) {
+      codeSize += 1;
+    }
+    oldCode = code;
+  }
+
+  return pixels.slice(0, expectedPixels);
+}
+
+/**
+ * Decodifica los fotogramas indexados de un GIF basico.
+ *
+ * @param {Uint8Array} bytes Bytes GIF.
+ * @returns {object[]} Fotogramas decodificados.
+ */
+function decodeGifFrames(bytes) {
+  assert.equal(Hormi.Core.Binary.asciiText(bytes.subarray(0, 6)), 'GIF89a');
+  let offset = 13;
+  const logicalPacked = bytes[10];
+  if (logicalPacked & 0x80) {
+    offset += 3 * (1 << ((logicalPacked & 0x07) + 1));
+  }
+
+  const frames = [];
+  while (offset < bytes.length && bytes[offset] !== 0x3b) {
+    const marker = bytes[offset];
+    offset += 1;
+    if (marker === 0x21) {
+      offset += 1;
+      const skipped = readGifSubBlocks(bytes, offset);
+      offset = skipped.offset;
+      continue;
+    }
+    assert.equal(marker, 0x2c);
+    const width = u16(bytes, offset + 4);
+    const height = u16(bytes, offset + 6);
+    const packed = bytes[offset + 8];
+    offset += 9;
+    if (packed & 0x80) {
+      offset += 3 * (1 << ((packed & 0x07) + 1));
+    }
+    const minCodeSize = bytes[offset];
+    const blocks = readGifSubBlocks(bytes, offset + 1);
+    const pixels = decodeGifLzw(blocks.data, minCodeSize, width * height);
+    assert.equal(pixels.length, width * height);
+    frames.push({ width, height, pixels });
+    offset = blocks.offset;
+  }
+  return frames;
 }
 
 /**
@@ -184,6 +331,65 @@ await test('GIF genera cabecera, dimensiones y cierre validos', () => {
   assert.equal(u16(encoded, 6), image.width);
   assert.equal(u16(encoded, 8), image.height);
   assert.equal(encoded[encoded.length - 1], 0x3b);
+  const frames = decodeGifFrames(encoded);
+  assert.equal(frames.length, 1);
+  assert.equal(frames[0].width, image.width);
+  assert.equal(frames[0].height, image.height);
+});
+
+await test('GIF animado exporta varios fotogramas con lienzo comun', () => {
+  const first = fixtureImage();
+  const second = {
+    width: 2,
+    height: 5,
+    data: new Uint8ClampedArray(2 * 5 * 4).fill(255)
+  };
+  const third = {
+    width: 6,
+    height: 2,
+    data: new Uint8ClampedArray(6 * 2 * 4).fill(80)
+  };
+  const encoded = Hormi.Encoders.Gif.encodeAnimation([
+    { name: 'a.png', width: first.width, height: first.height, imageData: first },
+    { name: 'b.png', width: second.width, height: second.height, imageData: second },
+    { name: 'c.png', width: third.width, height: third.height, imageData: third }
+  ], {
+    animate: true,
+    gifMode: 'animation',
+    colors: 16,
+    transparency: false,
+    fps: 8,
+    loop: 0,
+    canvasMode: 'largest',
+    fitMode: 'contain',
+    background: '#ffffff'
+  });
+  const frames = decodeGifFrames(encoded);
+  assert.equal(u16(encoded, 6), 6);
+  assert.equal(u16(encoded, 8), 5);
+  assert.equal(frames.length, 3);
+  assert.ok(frames.every((frame) => frame.width === 6 && frame.height === 5));
+});
+
+await test('Conversor GIF agrupa varias imagenes como animacion', async () => {
+  const image = fixtureImage();
+  const outputs = await Hormi.Conversion.Converter.convertMany([
+    { name: 'uno.png', width: image.width, height: image.height, imageData: image },
+    { name: 'dos.png', width: image.width, height: image.height, imageData: image }
+  ], 'gif', {
+    gifMode: 'animation',
+    colors: 16,
+    transparency: false,
+    fps: 10,
+    loop: 0,
+    canvasMode: 'largest',
+    fitMode: 'contain',
+    background: '#ffffff'
+  });
+  assert.equal(outputs.length, 1);
+  assert.equal(outputs[0].name, 'uno_animation.gif');
+  assert.equal(outputs[0].mime, 'image/gif');
+  assert.ok(outputs[0].size > 0);
 });
 
 await test('ICO genera directorio y DIB de icono', () => {

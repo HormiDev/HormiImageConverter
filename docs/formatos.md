@@ -8,7 +8,7 @@
 | JPG | Canvas nativo | Calidad, fondo para alfa |
 | WebP | Canvas nativo | Calidad |
 | AVIF | Canvas nativo | Calidad |
-| GIF | Codificador propio | Colores de paleta, transparencia, umbral alfa |
+| GIF | Codificador propio | Colores de paleta, modo animado/individual, transparencia, umbral alfa, FPS, bucle, lienzo, ajuste |
 | BMP | Codificador propio | 24/32 bits, fondo para alfa |
 | ICO | Codificador propio | Tamano del icono |
 | TIFF | Codificador propio | Aplanar alfa o preservar canal alfa |
@@ -34,7 +34,7 @@ Si no hay importador propio aplicable, usa el decodificador del navegador median
 
 ## Limitaciones previstas
 
-- `GIF` exporta un fotograma estatico, no animacion.
+- `GIF` puede exportar un fotograma estatico o una animacion cuando se cargan varias imagenes.
 - `TIFF` se escribe sin compresion para mantener el codigo local y legible.
 - `XPM` reconoce colores hexadecimales y algunos nombres basicos.
 - `PPM/PGM/PBM` se limitan a muestras de 8 bits.

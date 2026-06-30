@@ -6,7 +6,7 @@ No usa librerias externas de aplicacion: los formatos nativos salen de APIs Web 
 
 ## Formatos
 
-Exporta a `PNG`, `JPG`, `WebP`, `AVIF`, `GIF`, `BMP`, `ICO`, `TIFF`, `TGA`, `QOI`, `PPM`, `PGM`, `PBM`, `XPM` y `SVG`.
+Exporta a `PNG`, `JPG`, `WebP`, `AVIF`, `GIF` estatico/animado, `BMP`, `ICO`, `TIFF`, `TGA`, `QOI`, `PPM`, `PGM`, `PBM`, `XPM` y `SVG`.
 
 Importa con el navegador los formatos soportados por tu entorno y, ademas, importa de forma propia `BMP`, `TGA`, `QOI`, `PPM`, `PGM`, `PBM` y `XPM`.
 
@@ -67,7 +67,7 @@ make run-net
 make test
 ```
 
-Las pruebas generan una imagen RGBA pequena y validan exportacion/importacion en los codificadores propios: `QOI`, `BMP`, `TGA`, `PPM`, `PGM`, `PBM`, `XPM`, `GIF`, `ICO`, `TIFF` y `ZIP`.
+Las pruebas generan una imagen RGBA pequena y validan exportacion/importacion en los codificadores propios: `QOI`, `BMP`, `TGA`, `PPM`, `PGM`, `PBM`, `XPM`, `GIF` estatico/animado, `ICO`, `TIFF` y `ZIP`.
 
 ## Documentacion
 

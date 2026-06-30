@@ -128,8 +128,86 @@
       extension: 'gif',
       mime: 'image/gif',
       encoder: 'gif',
-      description: 'GIF89a estatico con paleta indexada.',
-      options: [colorsOption(128, 256), transparencyOption(), alphaThresholdOption()]
+      description: 'GIF89a estatico o animado con paleta indexada.',
+      options: [
+        colorsOption(128, 256),
+        transparencyOption(),
+        alphaThresholdOption(),
+        {
+          id: 'gifMode',
+          label: 'Salida con varias imagenes',
+          type: 'select',
+          default: 'animation',
+          choices: [
+            { value: 'animation', label: 'Un GIF animado' },
+            { value: 'individual', label: 'GIF individuales' }
+          ]
+        },
+        {
+          id: 'fps',
+          label: 'FPS',
+          type: 'range',
+          min: 1,
+          max: 60,
+          step: 1,
+          default: 10
+        },
+        {
+          id: 'loop',
+          label: 'Bucle',
+          type: 'select',
+          default: '0',
+          choices: [
+            { value: '0', label: 'Infinito' },
+            { value: '1', label: 'Una vez' },
+            { value: '3', label: '3 repeticiones' },
+            { value: '5', label: '5 repeticiones' },
+            { value: '10', label: '10 repeticiones' }
+          ]
+        },
+        {
+          id: 'canvasMode',
+          label: 'Lienzo animado',
+          type: 'select',
+          default: 'largest',
+          choices: [
+            { value: 'largest', label: 'Mayor imagen' },
+            { value: 'first', label: 'Primera imagen' },
+            { value: 'custom', label: 'Personalizado' }
+          ]
+        },
+        {
+          id: 'frameWidth',
+          label: 'Ancho personalizado',
+          type: 'range',
+          min: 16,
+          max: 4096,
+          step: 1,
+          default: 512
+        },
+        {
+          id: 'frameHeight',
+          label: 'Alto personalizado',
+          type: 'range',
+          min: 16,
+          max: 4096,
+          step: 1,
+          default: 512
+        },
+        {
+          id: 'fitMode',
+          label: 'Ajuste de fotograma',
+          type: 'select',
+          default: 'contain',
+          choices: [
+            { value: 'contain', label: 'Encajar completo' },
+            { value: 'cover', label: 'Cubrir y recortar' },
+            { value: 'stretch', label: 'Estirar' },
+            { value: 'center', label: 'Centrar sin escalar' }
+          ]
+        },
+        backgroundOption()
+      ]
     },
     {
       id: 'bmp',
