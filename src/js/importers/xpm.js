@@ -1,9 +1,9 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Binary = Hormi.Core.Binary;
-  var Color = Hormi.Core.Color;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Binary = MultiFormatImageConverter.Core.Binary;
+  var Color = MultiFormatImageConverter.Core.Color;
 
   var NAMED_COLORS = {
     black: '#000000',
@@ -110,7 +110,7 @@
     return { width: width, height: height, data: out };
   }
 
-  Hormi.Importers.Xpm = {
+  MultiFormatImageConverter.Importers.Xpm = {
     decode: decodeXpm
   };
 }(globalThis));

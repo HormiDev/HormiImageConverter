@@ -1,8 +1,8 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Binary = Hormi.Core.Binary;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Binary = MultiFormatImageConverter.Core.Binary;
 
   /**
    * Obtiene la extension minuscula de un nombre de fichero.
@@ -410,19 +410,19 @@
     var ext = extensionOf(name);
     var bytes = new Uint8Array(buffer);
     if (ext === 'ppm' || ext === 'pgm' || ext === 'pbm' || /^P[1-6]$/.test(Binary.asciiText(bytes.subarray(0, 2)))) {
-      return Hormi.Importers.Netpbm.decode(bytes);
+      return MultiFormatImageConverter.Importers.Netpbm.decode(bytes);
     }
     if (ext === 'xpm') {
-      return Hormi.Importers.Xpm.decode(bytes);
+      return MultiFormatImageConverter.Importers.Xpm.decode(bytes);
     }
     if (ext === 'bmp' && bytes[0] === 0x42 && bytes[1] === 0x4d) {
-      return Hormi.Importers.Bmp.decode(bytes);
+      return MultiFormatImageConverter.Importers.Bmp.decode(bytes);
     }
     if (ext === 'qoi' || Binary.asciiText(bytes.subarray(0, 4)) === 'qoif') {
-      return Hormi.Importers.Qoi.decode(bytes);
+      return MultiFormatImageConverter.Importers.Qoi.decode(bytes);
     }
     if (ext === 'tga') {
-      return Hormi.Importers.Tga.decode(bytes);
+      return MultiFormatImageConverter.Importers.Tga.decode(bytes);
     }
     return null;
   }
@@ -575,7 +575,7 @@
     return (await loadFileRasters(file))[0];
   }
 
-  Hormi.Conversion.FileLoader = {
+  MultiFormatImageConverter.Conversion.FileLoader = {
     decodeGifFrames: decodeGifFrames,
     decodeCustom: decodeCustom,
     extensionOf: extensionOf,

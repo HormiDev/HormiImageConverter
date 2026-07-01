@@ -1,7 +1,7 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
 
   var state = {
     rasters: [],
@@ -48,7 +48,7 @@
   function setStatus(refs, key, params) {
     state.statusKey = key;
     state.statusParams = params || {};
-    refs.status.textContent = Hormi.I18n.t(state.statusKey, state.statusParams);
+    refs.status.textContent = MultiFormatImageConverter.I18n.t(state.statusKey, state.statusParams);
   }
 
   /**
@@ -58,7 +58,7 @@
    * @returns {void}
    */
   function renderStatus(refs) {
-    refs.status.textContent = Hormi.I18n.t(state.statusKey, state.statusParams);
+    refs.status.textContent = MultiFormatImageConverter.I18n.t(state.statusKey, state.statusParams);
   }
 
   /**
@@ -115,7 +115,7 @@
    */
   function savedTheme() {
     try {
-      var theme = global.localStorage.getItem('hormi-theme');
+      var theme = global.localStorage.getItem('multi-format-image-converter-theme');
       return theme === 'light' ? 'light' : 'dark';
     } catch (_error) {
       return 'dark';
@@ -130,7 +130,7 @@
    */
   function saveTheme(theme) {
     try {
-      global.localStorage.setItem('hormi-theme', theme);
+      global.localStorage.setItem('multi-format-image-converter-theme', theme);
     } catch (_error) {
       // localStorage puede no estar disponible en algunos contextos file://.
     }
@@ -148,7 +148,7 @@
     document.documentElement.dataset.theme = nextTheme;
     refs.themeToggle.setAttribute(
       'aria-label',
-      Hormi.I18n.t(nextTheme === 'dark' ? 'theme.toLight' : 'theme.toDark')
+      MultiFormatImageConverter.I18n.t(nextTheme === 'dark' ? 'theme.toLight' : 'theme.toDark')
     );
     refs.themeToggle.setAttribute('aria-pressed', nextTheme === 'light' ? 'true' : 'false');
     saveTheme(nextTheme);
@@ -172,7 +172,7 @@
    * @returns {void}
    */
   function populateFormats(select) {
-    Hormi.Formats.all().forEach(function (format) {
+    MultiFormatImageConverter.Formats.all().forEach(function (format) {
       var option = document.createElement('option');
       option.value = format.id;
       option.textContent = format.name;
@@ -189,9 +189,9 @@
    * @returns {void}
    */
   function renderSelectedFormat(refs, values) {
-    var format = Hormi.Formats.byId(state.formatId);
-    refs.formatDescription.textContent = Hormi.I18n.t(format.descriptionKey, null, format.description);
-    Hormi.UI.Options.renderFormatOptions(refs.options, format, values);
+    var format = MultiFormatImageConverter.Formats.byId(state.formatId);
+    refs.formatDescription.textContent = MultiFormatImageConverter.I18n.t(format.descriptionKey, null, format.description);
+    MultiFormatImageConverter.UI.Options.renderFormatOptions(refs.options, format, values);
   }
 
   /**
@@ -230,7 +230,7 @@
    * @returns {void}
    */
   function renderState(refs) {
-    Hormi.UI.Gallery.renderImages(refs.imageList, state.rasters, function (id) {
+    MultiFormatImageConverter.UI.Gallery.renderImages(refs.imageList, state.rasters, function (id) {
       state.rasters = state.rasters.filter(function (raster) {
         return raster.id !== id;
       });
@@ -252,15 +252,15 @@
    * @returns {void}
    */
   function applyLanguage(refs, language, persist) {
-    var optionValues = Hormi.UI.Options.readOptions(refs.options);
-    var nextLanguage = Hormi.I18n.setLanguage(language, persist);
+    var optionValues = MultiFormatImageConverter.UI.Options.readOptions(refs.options);
+    var nextLanguage = MultiFormatImageConverter.I18n.setLanguage(language, persist);
     if (refs.languageSelect) {
       refs.languageSelect.value = nextLanguage;
     }
     if (refs.languageControl) {
       refs.languageControl.dataset.language = nextLanguage;
     }
-    Hormi.I18n.translateDocument(document);
+    MultiFormatImageConverter.I18n.translateDocument(document);
     applyTheme(refs, document.documentElement.dataset.theme);
     renderSelectedFormat(refs, optionValues);
     renderState(refs);
@@ -296,7 +296,7 @@
         setStatus(refs, 'status.loading', { name: list[i].name });
         await nextPaint();
         try {
-          var loader = Hormi.Conversion.FileLoader;
+          var loader = MultiFormatImageConverter.Conversion.FileLoader;
           var rasters = loader.loadFileRasters
             ? await loader.loadFileRasters(list[i])
             : [await loader.loadFile(list[i])];
@@ -361,8 +361,8 @@
     refs.outputList.replaceChildren();
 
     try {
-      var options = Hormi.UI.Options.readOptions(refs.options);
-      var outputs = await Hormi.Conversion.Converter.convertMany(
+      var options = MultiFormatImageConverter.UI.Options.readOptions(refs.options);
+      var outputs = await MultiFormatImageConverter.Conversion.Converter.convertMany(
         state.rasters,
         state.formatId,
         options,
@@ -373,15 +373,15 @@
           }
         }
       );
-      Hormi.UI.Gallery.renderOutputs(refs.outputList, outputs);
+      MultiFormatImageConverter.UI.Gallery.renderOutputs(refs.outputList, outputs);
       if (refs.zipToggle.checked || outputs.length > 1) {
-        var zip = await Hormi.Conversion.Converter.zipOutputs(outputs);
-        Hormi.Conversion.Converter.downloadBlob(
+        var zip = await MultiFormatImageConverter.Conversion.Converter.zipOutputs(outputs);
+        MultiFormatImageConverter.Conversion.Converter.downloadBlob(
           zip,
-          Hormi.Conversion.Converter.zipName(state.rasters, state.formatId)
+          MultiFormatImageConverter.Conversion.Converter.zipName(state.rasters, state.formatId)
         );
       } else {
-        Hormi.Conversion.Converter.downloadBlob(outputs[0].blob, outputs[0].name);
+        MultiFormatImageConverter.Conversion.Converter.downloadBlob(outputs[0].blob, outputs[0].name);
       }
       setProgress(refs, state.rasters.length, state.rasters.length);
       setStatus(refs, 'status.done');
@@ -442,7 +442,7 @@
     populateFormats(refs.formatSelect);
     renderSelectedFormat(refs);
     renderState(refs);
-    applyLanguage(refs, Hormi.I18n.savedLanguage(), false);
+    applyLanguage(refs, MultiFormatImageConverter.I18n.savedLanguage(), false);
     bindEvents(refs);
     renderStatus(refs);
   }

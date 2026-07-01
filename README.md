@@ -1,6 +1,9 @@
-# Hormi Image Converter
+# Multi-Format Image Converter
 
 Conversor de formatos de imagen 100% local. La pagina vive en `src/`, funciona abriendo `src/index.html` directamente en el navegador y tambien puede servirse con `make serve` o Docker.
+
+🌐 **Pruebalo en itch.io:**  
+[![Abrir en itch.io](https://img.shields.io/badge/Abrir%20en%20el%20navegador-itch.io-FA5C5C?style=for-the-badge&logo=itchdotio&logoColor=white)](https://hormidev.itch.io/multi-format-image-converter)
 
 No usa librerias externas de aplicacion: los formatos nativos salen de APIs Web (`canvas`, `Blob`, `File`) y los formatos no nativos se codifican/decodifican con codigo propio bajo la licencia MIT del proyecto.
 

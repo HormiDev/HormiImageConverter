@@ -1,9 +1,9 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Binary = Hormi.Core.Binary;
-  var Color = Hormi.Core.Color;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Binary = MultiFormatImageConverter.Core.Binary;
+  var Color = MultiFormatImageConverter.Core.Color;
 
   /**
    * Calcula el tamano de datos asociado a un tipo TIFF.
@@ -169,7 +169,7 @@
     return out;
   }
 
-  Hormi.Encoders.Tiff = {
+  MultiFormatImageConverter.Encoders.Tiff = {
     encode: encodeTiff
   };
 }(globalThis));

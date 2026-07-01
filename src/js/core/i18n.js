@@ -1,15 +1,15 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var storageKey = 'hormi-language';
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var storageKey = 'multi-format-image-converter-language';
   var fallbackLanguage = 'en';
   var supportedLanguages = ['en', 'es', 'fr'];
   var currentLanguage = fallbackLanguage;
 
   var messages = {
     en: {
-      'app.aria': 'Image converter',
+      'app.aria': 'Multi-Format Image Converter',
       'repo.aria': 'Official GitHub repository',
       'language.label': 'Language',
       'language.aria': 'Select interface language',
@@ -125,7 +125,7 @@
       'format.svg.description': 'SVG with the PNG image embedded in base64.'
     },
     es: {
-      'app.aria': 'Conversor de imagenes',
+      'app.aria': 'Multi-Format Image Converter',
       'repo.aria': 'Repositorio oficial en GitHub',
       'language.label': 'Idioma',
       'language.aria': 'Seleccionar idioma de la interfaz',
@@ -241,7 +241,7 @@
       'format.svg.description': 'SVG con la imagen PNG embebida en base64.'
     },
     fr: {
-      'app.aria': 'Convertisseur d images',
+      'app.aria': 'Multi-Format Image Converter',
       'repo.aria': 'Depot GitHub officiel',
       'language.label': 'Langue',
       'language.aria': 'Selectionner la langue de l interface',
@@ -464,7 +464,7 @@
     });
   }
 
-  Hormi.I18n = {
+  MultiFormatImageConverter.I18n = {
     current: function () {
       return currentLanguage;
     },

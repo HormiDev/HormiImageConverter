@@ -1,8 +1,8 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Binary = Hormi.Core.Binary;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Binary = MultiFormatImageConverter.Core.Binary;
 
   /**
    * Redimensiona ImageData con vecino mas cercano.
@@ -129,7 +129,7 @@
     return out;
   }
 
-  Hormi.Encoders.Ico = {
+  MultiFormatImageConverter.Encoders.Ico = {
     encode: encodeIco
   };
 }(globalThis));

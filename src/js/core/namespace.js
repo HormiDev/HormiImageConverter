@@ -19,5 +19,5 @@
     };
   }
 
-  global.Hormi = global.Hormi || createNamespace();
+  global.MultiFormatImageConverter = global.MultiFormatImageConverter || createNamespace();
 }(globalThis));

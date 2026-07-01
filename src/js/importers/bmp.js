@@ -1,9 +1,9 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Binary = Hormi.Core.Binary;
-  var Color = Hormi.Core.Color;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Binary = MultiFormatImageConverter.Core.Binary;
+  var Color = MultiFormatImageConverter.Core.Color;
 
   /**
    * Lee un entero firmado de 32 bits little-endian.
@@ -90,7 +90,7 @@
     return { width: width, height: height, data: out };
   }
 
-  Hormi.Importers.Bmp = {
+  MultiFormatImageConverter.Importers.Bmp = {
     decode: decodeBmp
   };
 }(globalThis));

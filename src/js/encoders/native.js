@@ -1,8 +1,8 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Color = Hormi.Core.Color;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Color = MultiFormatImageConverter.Core.Color;
 
   /**
    * Convierte un canvas a Blob con promesa.
@@ -59,7 +59,7 @@
     return canvasToBlob(sourceCanvas, mime, Number.isFinite(quality) ? quality : undefined);
   }
 
-  Hormi.Encoders.Native = {
+  MultiFormatImageConverter.Encoders.Native = {
     canvasToBlob: canvasToBlob,
     encode: encodeNative,
     opaqueCanvas: opaqueCanvas

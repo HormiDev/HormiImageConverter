@@ -1,9 +1,9 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Binary = Hormi.Core.Binary;
-  var Color = Hormi.Core.Color;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Binary = MultiFormatImageConverter.Core.Binary;
+  var Color = MultiFormatImageConverter.Core.Color;
 
   /**
    * Decodifica TGA sin compresion RGB/RGBA o escala de grises.
@@ -57,7 +57,7 @@
     return { width: width, height: height, data: out };
   }
 
-  Hormi.Importers.Tga = {
+  MultiFormatImageConverter.Importers.Tga = {
     decode: decodeTga
   };
 }(globalThis));

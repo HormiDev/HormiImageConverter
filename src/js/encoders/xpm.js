@@ -1,10 +1,10 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Binary = Hormi.Core.Binary;
-  var Color = Hormi.Core.Color;
-  var Palette = Hormi.Core.Palette;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Binary = MultiFormatImageConverter.Core.Binary;
+  var Color = MultiFormatImageConverter.Core.Color;
+  var Palette = MultiFormatImageConverter.Core.Palette;
 
   var SYMBOLS = ' .,:;=+*#@$%abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?/()[]{}<>-_';
 
@@ -97,9 +97,9 @@
    * @returns {string} Identificador seguro.
    */
   function safeVariableName(value) {
-    var name = String(value || 'hormi_image').replace(/[^\w]/g, '_');
+    var name = String(value || 'multi_format_image').replace(/[^\w]/g, '_');
     if (!name || /^\d/.test(name)) {
-      name = 'hormi_image';
+      name = 'multi_format_image';
     }
     return name;
   }
@@ -142,7 +142,7 @@
     return Binary.utf8Bytes(lines.join('\n'));
   }
 
-  Hormi.Encoders.Xpm = {
+  MultiFormatImageConverter.Encoders.Xpm = {
     encode: encodeXpm
   };
 }(globalThis));

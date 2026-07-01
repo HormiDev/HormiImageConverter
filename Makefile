@@ -1,4 +1,4 @@
-NAME		:= hormi-image-converter
+NAME		:= multi-format-image-converter
 IMAGE		:= $(NAME):local
 CONTAINER	:= $(NAME)
 LOCAL_HOST	?= 127.0.0.1

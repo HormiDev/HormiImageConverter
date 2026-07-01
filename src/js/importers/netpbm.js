@@ -1,9 +1,9 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Binary = Hormi.Core.Binary;
-  var Color = Hormi.Core.Color;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Binary = MultiFormatImageConverter.Core.Binary;
+  var Color = MultiFormatImageConverter.Core.Color;
 
   /**
    * Avanza sobre espacios y comentarios Netpbm.
@@ -196,7 +196,7 @@
     return decodeBinary(bytes, magic, width, height, maxValue, offset);
   }
 
-  Hormi.Importers.Netpbm = {
+  MultiFormatImageConverter.Importers.Netpbm = {
     decode: decodeNetpbm
   };
 }(globalThis));

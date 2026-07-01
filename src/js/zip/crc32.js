@@ -1,7 +1,7 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
 
   /**
    * Genera la tabla CRC32 usada por ZIP.
@@ -36,5 +36,5 @@
     return (crc ^ 0xffffffff) >>> 0;
   }
 
-  Hormi.Zip.crc32 = crc32;
+  MultiFormatImageConverter.Zip.crc32 = crc32;
 }(globalThis));

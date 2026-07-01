@@ -1,7 +1,7 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
 
   /**
    * Crea un Blob desde bytes con su tipo MIME.
@@ -32,8 +32,8 @@
    * @returns {object} Raster procesado.
    */
   function preparedRaster(raster, options) {
-    if (Hormi.Conversion.Resize) {
-      return Hormi.Conversion.Resize.apply(raster, options);
+    if (MultiFormatImageConverter.Conversion.Resize) {
+      return MultiFormatImageConverter.Conversion.Resize.apply(raster, options);
     }
     return raster;
   }
@@ -47,7 +47,7 @@
    * @returns {Promise<Blob>} Blob codificado.
    */
   async function encode(formatId, raster, options) {
-    var format = Hormi.Formats.byId(formatId);
+    var format = MultiFormatImageConverter.Formats.byId(formatId);
     if (!format) {
       throw new Error('Formato no registrado: ' + formatId);
     }
@@ -59,44 +59,44 @@
     var prepared = preparedRaster(raster, settings);
 
     if (format.encoder === 'native') {
-      return Hormi.Encoders.Native.encode(prepared, settings);
+      return MultiFormatImageConverter.Encoders.Native.encode(prepared, settings);
     }
     if (format.encoder === 'gif') {
-      return blobFromBytes(Hormi.Encoders.Gif.encode(imageDataOf(prepared), settings), format.mime);
+      return blobFromBytes(MultiFormatImageConverter.Encoders.Gif.encode(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'bmp') {
-      return blobFromBytes(Hormi.Encoders.Bmp.encode(imageDataOf(prepared), settings), format.mime);
+      return blobFromBytes(MultiFormatImageConverter.Encoders.Bmp.encode(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'ico') {
-      return blobFromBytes(Hormi.Encoders.Ico.encode(imageDataOf(prepared), settings), format.mime);
+      return blobFromBytes(MultiFormatImageConverter.Encoders.Ico.encode(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'tiff') {
-      return blobFromBytes(Hormi.Encoders.Tiff.encode(imageDataOf(prepared), settings), format.mime);
+      return blobFromBytes(MultiFormatImageConverter.Encoders.Tiff.encode(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'tga') {
-      return blobFromBytes(Hormi.Encoders.Tga.encode(imageDataOf(prepared), settings), format.mime);
+      return blobFromBytes(MultiFormatImageConverter.Encoders.Tga.encode(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'qoi') {
-      return blobFromBytes(Hormi.Encoders.Qoi.encode(imageDataOf(prepared), settings), format.mime);
+      return blobFromBytes(MultiFormatImageConverter.Encoders.Qoi.encode(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'ppm') {
-      return blobFromBytes(Hormi.Encoders.Netpbm.encodePpm(imageDataOf(prepared), settings), format.mime);
+      return blobFromBytes(MultiFormatImageConverter.Encoders.Netpbm.encodePpm(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'pgm') {
-      return blobFromBytes(Hormi.Encoders.Netpbm.encodePgm(imageDataOf(prepared), settings), format.mime);
+      return blobFromBytes(MultiFormatImageConverter.Encoders.Netpbm.encodePgm(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'pbm') {
-      return blobFromBytes(Hormi.Encoders.Netpbm.encodePbm(imageDataOf(prepared), settings), format.mime);
+      return blobFromBytes(MultiFormatImageConverter.Encoders.Netpbm.encodePbm(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'xpm') {
-      return blobFromBytes(Hormi.Encoders.Xpm.encode(imageDataOf(prepared), settings), format.mime);
+      return blobFromBytes(MultiFormatImageConverter.Encoders.Xpm.encode(imageDataOf(prepared), settings), format.mime);
     }
     if (format.encoder === 'svg') {
-      return Hormi.Encoders.Svg.encode(prepared, settings);
+      return MultiFormatImageConverter.Encoders.Svg.encode(prepared, settings);
     }
 
     throw new Error('Codificador no implementado: ' + format.encoder);
   }
 
-  Hormi.Encoders.encode = encode;
+  MultiFormatImageConverter.Encoders.encode = encode;
 }(globalThis));

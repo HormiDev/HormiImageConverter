@@ -33,7 +33,7 @@ docs/
 
 ## Convenciones
 
-- Cada modulo se registra bajo `window.Hormi`.
+- Cada modulo se registra bajo `window.MultiFormatImageConverter`.
 - Se usan scripts clasicos para permitir apertura directa con `file://`.
 - Los archivos se mantienen pequenos por responsabilidad.
 - Las funciones publicas y auxiliares tienen comentarios en espanol con argumentos y retorno.

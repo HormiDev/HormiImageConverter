@@ -1,8 +1,8 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Binary = Hormi.Core.Binary;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Binary = MultiFormatImageConverter.Core.Binary;
 
   /**
    * Convierte una fecha JavaScript al formato de hora DOS de ZIP.
@@ -155,7 +155,7 @@
       entries.push({
         name: cleanZipName(files[i].name),
         bytes: bytes,
-        crc: Hormi.Zip.crc32(bytes),
+        crc: MultiFormatImageConverter.Zip.crc32(bytes),
         time: dosTime(now),
         date: dosDate(now),
         localOffset: 0
@@ -187,5 +187,5 @@
     return new Blob([zipBytes], { type: 'application/zip' });
   }
 
-  Hormi.Zip.createZip = createZip;
+  MultiFormatImageConverter.Zip.createZip = createZip;
 }(globalThis));

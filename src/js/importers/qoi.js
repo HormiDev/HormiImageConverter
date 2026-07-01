@@ -1,9 +1,9 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Binary = Hormi.Core.Binary;
-  var Color = Hormi.Core.Color;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Binary = MultiFormatImageConverter.Core.Binary;
+  var Color = MultiFormatImageConverter.Core.Color;
 
   /**
    * Lee un entero de 32 bits big-endian.
@@ -117,7 +117,7 @@
     return { width: width, height: height, data: out, channels: channels, colorspace: colorspace };
   }
 
-  Hormi.Importers.Qoi = {
+  MultiFormatImageConverter.Importers.Qoi = {
     decode: decodeQoi,
     hash: qoiHash
   };

@@ -1,7 +1,7 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
 
   /**
    * Elimina la extension de un nombre de archivo.
@@ -47,8 +47,8 @@
    * @returns {Promise<object>} Entrada de salida.
    */
   async function convertOne(raster, formatId, options) {
-    var format = Hormi.Formats.byId(formatId);
-    var blob = await Hormi.Encoders.encode(formatId, raster, options);
+    var format = MultiFormatImageConverter.Formats.byId(formatId);
+    var blob = await MultiFormatImageConverter.Encoders.encode(formatId, raster, options);
     return {
       name: outputName(raster, format),
       blob: blob,
@@ -66,13 +66,13 @@
    */
   function convertGifAnimation(rasters, options) {
     var settings = Object.assign({}, options || {});
-    if (Hormi.Conversion.Resize && settings.keepResolution === false) {
-      var size = Hormi.Conversion.Resize.targetSize(rasters[0].imageData, settings);
+    if (MultiFormatImageConverter.Conversion.Resize && settings.keepResolution === false) {
+      var size = MultiFormatImageConverter.Conversion.Resize.targetSize(rasters[0].imageData, settings);
       settings.canvasMode = 'custom';
       settings.frameWidth = size.width;
       settings.frameHeight = size.height;
     }
-    var bytes = Hormi.Encoders.Gif.encodeAnimation(rasters, settings);
+    var bytes = MultiFormatImageConverter.Encoders.Gif.encodeAnimation(rasters, settings);
     var blob = new Blob([bytes], { type: 'image/gif' });
     return {
       name: safeName(basename(rasters[0].name)) + '_animation.gif',
@@ -143,7 +143,7 @@
    * @returns {Promise<Blob>} Blob ZIP.
    */
   function zipOutputs(outputs) {
-    return Hormi.Zip.createZip(outputs.map(function (output) {
+    return MultiFormatImageConverter.Zip.createZip(outputs.map(function (output) {
       return { name: output.name, data: output.blob };
     }));
   }
@@ -159,10 +159,10 @@
     if (rasters.length === 1) {
       return safeName(basename(rasters[0].name)) + '_' + formatId + '.zip';
     }
-    return 'hormi_export_' + formatId + '.zip';
+    return 'multi_format_export_' + formatId + '.zip';
   }
 
-  Hormi.Conversion.Converter = {
+  MultiFormatImageConverter.Conversion.Converter = {
     basename: basename,
     convertMany: convertMany,
     convertOne: convertOne,

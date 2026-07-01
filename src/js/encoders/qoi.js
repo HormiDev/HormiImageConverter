@@ -1,8 +1,8 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Binary = Hormi.Core.Binary;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Binary = MultiFormatImageConverter.Core.Binary;
 
   /**
    * Comprueba si dos pixeles QOI son iguales.
@@ -115,7 +115,7 @@
 
       pushRun(bytes, run);
       run = 0;
-      var hash = Hormi.Importers.Qoi.hash(px);
+      var hash = MultiFormatImageConverter.Importers.Qoi.hash(px);
       if (samePixel(index[hash], px)) {
         bytes.push(hash);
       } else {
@@ -130,7 +130,7 @@
     return new Uint8Array(bytes);
   }
 
-  Hormi.Encoders.Qoi = {
+  MultiFormatImageConverter.Encoders.Qoi = {
     encode: encodeQoi
   };
 }(globalThis));

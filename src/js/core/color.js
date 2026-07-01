@@ -1,7 +1,7 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
 
   /**
    * Limita un numero al rango de un canal de color.
@@ -147,7 +147,7 @@
     };
   }
 
-  Hormi.Core.Color = {
+  MultiFormatImageConverter.Core.Color = {
     clampByte: clampByte,
     flattenImageData: flattenImageData,
     flattenPixel: flattenPixel,

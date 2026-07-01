@@ -1,9 +1,9 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Binary = Hormi.Core.Binary;
-  var Color = Hormi.Core.Color;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Binary = MultiFormatImageConverter.Core.Binary;
+  var Color = MultiFormatImageConverter.Core.Color;
 
   /**
    * Devuelve una version opaca de un pixel.
@@ -137,7 +137,7 @@
     return Binary.concatBytes(parts);
   }
 
-  Hormi.Encoders.Netpbm = {
+  MultiFormatImageConverter.Encoders.Netpbm = {
     encodePbm: encodePbm,
     encodePgm: encodePgm,
     encodePpm: encodePpm

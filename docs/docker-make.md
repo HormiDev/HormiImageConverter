@@ -6,7 +6,7 @@
 make build
 ```
 
-Crea la imagen `hormi-image-converter:local`.
+Crea la imagen `multi-format-image-converter:local`.
 
 ```sh
 make run

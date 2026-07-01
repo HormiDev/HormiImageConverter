@@ -1,7 +1,7 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
 
   /**
    * Limita un valor numerico entre dos extremos.
@@ -250,7 +250,7 @@
     });
   }
 
-  Hormi.Conversion.Resize = {
+  MultiFormatImageConverter.Conversion.Resize = {
     apply: applyResize,
     resizeImageData: resizeImageData,
     resizeNearest: resizeNearest,

@@ -1,10 +1,10 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Binary = Hormi.Core.Binary;
-  var Color = Hormi.Core.Color;
-  var Palette = Hormi.Core.Palette;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Binary = MultiFormatImageConverter.Core.Binary;
+  var Color = MultiFormatImageConverter.Core.Color;
+  var Palette = MultiFormatImageConverter.Core.Palette;
 
   /**
    * Calcula el numero de bits necesario para una tabla de color.
@@ -464,7 +464,7 @@
     return Binary.concatBytes(parts);
   }
 
-  Hormi.Encoders.Gif = {
+  MultiFormatImageConverter.Encoders.Gif = {
     encode: encodeGif,
     encodeAnimation: encodeAnimation
   };

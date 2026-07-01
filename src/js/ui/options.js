@@ -1,7 +1,7 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
 
   /**
    * Crea un elemento con clase CSS.
@@ -25,7 +25,7 @@
    * @returns {string} Etiqueta visible.
    */
   function labelText(item) {
-    return Hormi.I18n.t(item.labelKey, null, item.label);
+    return MultiFormatImageConverter.I18n.t(item.labelKey, null, item.label);
   }
 
   /**
@@ -281,7 +281,7 @@
     container.replaceChildren();
     if (!format.options.length) {
       var empty = element('p', 'empty-options');
-      empty.textContent = Hormi.I18n.t('options.empty');
+      empty.textContent = MultiFormatImageConverter.I18n.t('options.empty');
       container.appendChild(empty);
       return;
     }
@@ -313,7 +313,7 @@
     return values;
   }
 
-  Hormi.UI.Options = {
+  MultiFormatImageConverter.UI.Options = {
     readOptions: readOptions,
     renderFormatOptions: renderFormatOptions
   };

@@ -1,8 +1,8 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Binary = Hormi.Core.Binary;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Binary = MultiFormatImageConverter.Core.Binary;
 
   /**
    * Escapa texto para XML.
@@ -28,9 +28,9 @@
   async function encodeSvg(raster, options) {
     var settings = options || {};
     var sourceCanvas = settings.flattenAlpha
-      ? Hormi.Encoders.Native.opaqueCanvas(raster, settings.background || '#ffffff')
+      ? MultiFormatImageConverter.Encoders.Native.opaqueCanvas(raster, settings.background || '#ffffff')
       : raster.canvas;
-    var pngBlob = await Hormi.Encoders.Native.canvasToBlob(sourceCanvas, 'image/png');
+    var pngBlob = await MultiFormatImageConverter.Encoders.Native.canvasToBlob(sourceCanvas, 'image/png');
     var pngBytes = new Uint8Array(await pngBlob.arrayBuffer());
     var title = settings.title || raster.name || 'imagen';
     var svg = [
@@ -44,7 +44,7 @@
     return new Blob([svg], { type: 'image/svg+xml' });
   }
 
-  Hormi.Encoders.Svg = {
+  MultiFormatImageConverter.Encoders.Svg = {
     encode: encodeSvg
   };
 }(globalThis));

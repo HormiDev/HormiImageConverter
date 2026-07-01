@@ -423,11 +423,12 @@ button:disabled {
   border-radius: 2px;
   background: var(--switch-thumb);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+  transform: translateX(36px);
   transition: transform 180ms ease;
 }
 
 :root[data-theme="light"] .theme-switch__thumb {
-  transform: translateX(36px);
+  transform: translateX(0);
 }
 
 .tool-grid {

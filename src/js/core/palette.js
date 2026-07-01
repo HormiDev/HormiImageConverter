@@ -1,8 +1,8 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
-  var Color = Hormi.Core.Color;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
+  var Color = MultiFormatImageConverter.Core.Color;
 
   /**
    * Devuelve el canal con mayor rango dentro de una caja de colores.
@@ -263,7 +263,7 @@
     return size;
   }
 
-  Hormi.Core.Palette = {
+  MultiFormatImageConverter.Core.Palette = {
     indexImage: indexImage,
     nearestColorIndex: nearestColorIndex,
     paletteTableSize: paletteTableSize,

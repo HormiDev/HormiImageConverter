@@ -1,7 +1,7 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
   var textEncoder = new TextEncoder();
   var textDecoder = new TextDecoder('utf-8');
 
@@ -193,7 +193,7 @@
     return new Uint8Array(input);
   }
 
-  Hormi.Core.Binary = {
+  MultiFormatImageConverter.Core.Binary = {
     asciiBytes: asciiBytes,
     asciiText: asciiText,
     bytesToBase64: bytesToBase64,

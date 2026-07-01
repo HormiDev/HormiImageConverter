@@ -1,7 +1,7 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
 
   /**
    * Crea una opcion de calidad comun para formatos con perdida.
@@ -491,7 +491,7 @@
           id: 'variableName',
           labelKey: 'option.variableName',
           type: 'text',
-          default: 'hormi_image'
+          default: 'multi_format_image'
         }
       ])
     },
@@ -536,7 +536,7 @@
     return formats.slice();
   }
 
-  Hormi.Formats = {
+  MultiFormatImageConverter.Formats = {
     all: all,
     byId: byId
   };

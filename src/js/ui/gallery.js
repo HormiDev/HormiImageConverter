@@ -1,7 +1,7 @@
 (function (global) {
   'use strict';
 
-  var Hormi = global.Hormi;
+  var MultiFormatImageConverter = global.MultiFormatImageConverter;
   var draggedId = null;
 
   /**
@@ -61,7 +61,7 @@
     name.textContent = raster.name;
     meta.textContent = raster.width + ' x ' + raster.height + ' px';
     remove.type = 'button';
-    remove.textContent = Hormi.I18n.t('gallery.remove');
+    remove.textContent = MultiFormatImageConverter.I18n.t('gallery.remove');
     remove.addEventListener('click', function () {
       onRemove(raster.id);
     });
@@ -131,7 +131,7 @@
     container.replaceChildren();
     if (!rasters.length) {
       var empty = element('p', 'empty-gallery');
-      empty.textContent = Hormi.I18n.t('gallery.empty');
+      empty.textContent = MultiFormatImageConverter.I18n.t('gallery.empty');
       container.appendChild(empty);
       return;
     }
@@ -156,7 +156,7 @@
     });
   }
 
-  Hormi.UI.Gallery = {
+  MultiFormatImageConverter.UI.Gallery = {
     renderImages: renderImages,
     renderOutputs: renderOutputs
   };

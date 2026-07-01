@@ -44,7 +44,7 @@ function loadScript(relative) {
   'src/js/conversion/file-loader.js'
 ].forEach(loadScript);
 
-const { Hormi } = globalThis;
+const { MultiFormatImageConverter } = globalThis;
 
 /**
  * Crea una imagen RGBA de prueba con colores y alfa variados.
@@ -117,7 +117,7 @@ function assertRgbImage(actual, expected) {
  * @returns {object} Opcion encontrada.
  */
 function formatOption(formatId, optionId) {
-  return Hormi.Formats.byId(formatId).options.find((option) => option.id === optionId);
+  return MultiFormatImageConverter.Formats.byId(formatId).options.find((option) => option.id === optionId);
 }
 
 /**
@@ -139,7 +139,7 @@ function u16(bytes, offset) {
  * @returns {number} Valor leido.
  */
 function u32(bytes, offset) {
-  return Hormi.Core.Binary.readU32LE(bytes, offset);
+  return MultiFormatImageConverter.Core.Binary.readU32LE(bytes, offset);
 }
 
 /**
@@ -263,7 +263,7 @@ function decodeGifLzw(data, minCodeSize, expectedPixels) {
  * @returns {object[]} Fotogramas decodificados.
  */
 function decodeGifFrames(bytes) {
-  assert.equal(Hormi.Core.Binary.asciiText(bytes.subarray(0, 6)), 'GIF89a');
+  assert.equal(MultiFormatImageConverter.Core.Binary.asciiText(bytes.subarray(0, 6)), 'GIF89a');
   let offset = 13;
   const logicalPacked = bytes[10];
   if (logicalPacked & 0x80) {
@@ -312,14 +312,14 @@ async function test(name, fn) {
 
 await test('QOI exporta e importa sin perdida', () => {
   const image = fixtureImage();
-  const encoded = Hormi.Encoders.Qoi.encode(image, {});
-  const decoded = Hormi.Importers.Qoi.decode(encoded);
+  const encoded = MultiFormatImageConverter.Encoders.Qoi.encode(image, {});
+  const decoded = MultiFormatImageConverter.Importers.Qoi.decode(encoded);
   assertExactImage(decoded, image);
 });
 
 await test('Redimensionado comun cambia dimensiones antes de exportar', async () => {
   const image = fixtureImage();
-  const blob = await Hormi.Encoders.encode('qoi', {
+  const blob = await MultiFormatImageConverter.Encoders.encode('qoi', {
     name: 'demo.png',
     width: image.width,
     height: image.height,
@@ -331,7 +331,7 @@ await test('Redimensionado comun cambia dimensiones antes de exportar', async ()
     resizeHeight: 2,
     resizeFilter: 'nearest'
   });
-  const decoded = Hormi.Importers.Qoi.decode(await blobBytes(blob));
+  const decoded = MultiFormatImageConverter.Importers.Qoi.decode(await blobBytes(blob));
   assert.equal(decoded.width, 2);
   assert.equal(decoded.height, 2);
   assert.equal(decoded.data.length, 2 * 2 * 4);
@@ -354,37 +354,37 @@ await test('Color de fondo depende de opciones que aplanan transparencia', () =>
 
 await test('BMP 32 bits exporta e importa RGBA', () => {
   const image = fixtureImage();
-  const encoded = Hormi.Encoders.Bmp.encode(image, { bitDepth: 32 });
-  const decoded = Hormi.Importers.Bmp.decode(encoded);
+  const encoded = MultiFormatImageConverter.Encoders.Bmp.encode(image, { bitDepth: 32 });
+  const decoded = MultiFormatImageConverter.Importers.Bmp.decode(encoded);
   assertExactImage(decoded, image);
 });
 
 await test('TGA 32 bits exporta e importa RGBA', () => {
   const image = fixtureImage();
-  const encoded = Hormi.Encoders.Tga.encode(image, { bitDepth: 32 });
-  const decoded = Hormi.Importers.Tga.decode(encoded);
+  const encoded = MultiFormatImageConverter.Encoders.Tga.encode(image, { bitDepth: 32 });
+  const decoded = MultiFormatImageConverter.Importers.Tga.decode(encoded);
   assertExactImage(decoded, image);
 });
 
 await test('TGA con origen inferior mantiene la imagen al importar', () => {
   const image = fixtureImage();
-  const encoded = Hormi.Encoders.Tga.encode(image, { bitDepth: 32, origin: 'bottom' });
+  const encoded = MultiFormatImageConverter.Encoders.Tga.encode(image, { bitDepth: 32, origin: 'bottom' });
   assert.equal((encoded[17] & 0x20), 0);
-  const decoded = Hormi.Importers.Tga.decode(encoded);
+  const decoded = MultiFormatImageConverter.Importers.Tga.decode(encoded);
   assertExactImage(decoded, image);
 });
 
 await test('PPM binario exporta e importa RGB', () => {
   const image = fixtureImage();
-  const encoded = Hormi.Encoders.Netpbm.encodePpm(image, { ascii: false, background: '#ffffff' });
-  const decoded = Hormi.Importers.Netpbm.decode(encoded);
-  assertRgbImage(decoded, Hormi.Core.Color.flattenImageData(image, { r: 255, g: 255, b: 255 }));
+  const encoded = MultiFormatImageConverter.Encoders.Netpbm.encodePpm(image, { ascii: false, background: '#ffffff' });
+  const decoded = MultiFormatImageConverter.Importers.Netpbm.decode(encoded);
+  assertRgbImage(decoded, MultiFormatImageConverter.Core.Color.flattenImageData(image, { r: 255, g: 255, b: 255 }));
 });
 
 await test('PGM ASCII exporta e importa dimensiones', () => {
   const image = fixtureImage();
-  const encoded = Hormi.Encoders.Netpbm.encodePgm(image, { ascii: true, background: '#ffffff' });
-  const decoded = Hormi.Importers.Netpbm.decode(encoded);
+  const encoded = MultiFormatImageConverter.Encoders.Netpbm.encodePgm(image, { ascii: true, background: '#ffffff' });
+  const decoded = MultiFormatImageConverter.Importers.Netpbm.decode(encoded);
   assert.equal(decoded.width, image.width);
   assert.equal(decoded.height, image.height);
   assert.equal(decoded.data[3], 255);
@@ -392,8 +392,8 @@ await test('PGM ASCII exporta e importa dimensiones', () => {
 
 await test('PBM binario exporta e importa monocromo', () => {
   const image = fixtureImage();
-  const encoded = Hormi.Encoders.Netpbm.encodePbm(image, { ascii: false, threshold: 128 });
-  const decoded = Hormi.Importers.Netpbm.decode(encoded);
+  const encoded = MultiFormatImageConverter.Encoders.Netpbm.encodePbm(image, { ascii: false, threshold: 128 });
+  const decoded = MultiFormatImageConverter.Importers.Netpbm.decode(encoded);
   assert.equal(decoded.width, image.width);
   assert.equal(decoded.height, image.height);
   assert.ok(decoded.data.every((value, index) => (index % 4 === 3 ? value === 255 : value === 0 || value === 255)));
@@ -401,8 +401,8 @@ await test('PBM binario exporta e importa monocromo', () => {
 
 await test('XPM exporta e importa transparencia basica', () => {
   const image = fixtureImage();
-  const encoded = Hormi.Encoders.Xpm.encode(image, { colors: 16, transparency: true, alphaThreshold: 8 });
-  const decoded = Hormi.Importers.Xpm.decode(encoded);
+  const encoded = MultiFormatImageConverter.Encoders.Xpm.encode(image, { colors: 16, transparency: true, alphaThreshold: 8 });
+  const decoded = MultiFormatImageConverter.Importers.Xpm.decode(encoded);
   assert.equal(decoded.width, image.width);
   assert.equal(decoded.height, image.height);
   assert.equal(decoded.data[8 * 4 + 3], 0);
@@ -410,15 +410,15 @@ await test('XPM exporta e importa transparencia basica', () => {
 
 await test('XPM permite nombre de variable C saneado', () => {
   const image = fixtureImage();
-  const encoded = Hormi.Encoders.Xpm.encode(image, { colors: 16, variableName: 'icon demo' });
-  const text = Hormi.Core.Binary.utf8Text(encoded);
+  const encoded = MultiFormatImageConverter.Encoders.Xpm.encode(image, { colors: 16, variableName: 'icon demo' });
+  const text = MultiFormatImageConverter.Core.Binary.utf8Text(encoded);
   assert.ok(text.includes('static char * icon_demo[]'));
 });
 
 await test('GIF genera cabecera, dimensiones y cierre validos', () => {
   const image = fixtureImage();
-  const encoded = Hormi.Encoders.Gif.encode(image, { colors: 16, transparency: true, alphaThreshold: 8 });
-  assert.equal(Hormi.Core.Binary.asciiText(encoded.subarray(0, 6)), 'GIF89a');
+  const encoded = MultiFormatImageConverter.Encoders.Gif.encode(image, { colors: 16, transparency: true, alphaThreshold: 8 });
+  assert.equal(MultiFormatImageConverter.Core.Binary.asciiText(encoded.subarray(0, 6)), 'GIF89a');
   assert.equal(u16(encoded, 6), image.width);
   assert.equal(u16(encoded, 8), image.height);
   assert.equal(encoded[encoded.length - 1], 0x3b);
@@ -440,7 +440,7 @@ await test('GIF animado exporta varios fotogramas con lienzo comun', () => {
     height: 2,
     data: new Uint8ClampedArray(6 * 2 * 4).fill(80)
   };
-  const encoded = Hormi.Encoders.Gif.encodeAnimation([
+  const encoded = MultiFormatImageConverter.Encoders.Gif.encodeAnimation([
     { name: 'a.png', width: first.width, height: first.height, imageData: first },
     { name: 'b.png', width: second.width, height: second.height, imageData: second },
     { name: 'c.png', width: third.width, height: third.height, imageData: third }
@@ -465,7 +465,7 @@ await test('GIF animado exporta varios fotogramas con lienzo comun', () => {
 await test('Importador GIF separa animaciones en fotogramas', () => {
   const first = solidImage(2, 2, [255, 0, 0, 255]);
   const second = solidImage(2, 2, [0, 0, 255, 255]);
-  const encoded = Hormi.Encoders.Gif.encodeAnimation([
+  const encoded = MultiFormatImageConverter.Encoders.Gif.encodeAnimation([
     { name: 'rojo.png', width: first.width, height: first.height, imageData: first },
     { name: 'azul.png', width: second.width, height: second.height, imageData: second }
   ], {
@@ -478,7 +478,7 @@ await test('Importador GIF separa animaciones en fotogramas', () => {
     fitMode: 'contain',
     background: '#ffffff'
   });
-  const frames = Hormi.Conversion.FileLoader.decodeGifFrames(encoded);
+  const frames = MultiFormatImageConverter.Conversion.FileLoader.decodeGifFrames(encoded);
   assert.equal(frames.length, 2);
   assert.equal(frames[0].width, 2);
   assert.equal(frames[0].height, 2);
@@ -488,7 +488,7 @@ await test('Importador GIF separa animaciones en fotogramas', () => {
 
 await test('Conversor GIF agrupa varias imagenes como animacion', async () => {
   const image = fixtureImage();
-  const outputs = await Hormi.Conversion.Converter.convertMany([
+  const outputs = await MultiFormatImageConverter.Conversion.Converter.convertMany([
     { name: 'uno.png', width: image.width, height: image.height, imageData: image },
     { name: 'dos.png', width: image.width, height: image.height, imageData: image }
   ], 'gif', {
@@ -509,7 +509,7 @@ await test('Conversor GIF agrupa varias imagenes como animacion', async () => {
 
 await test('ICO genera directorio y DIB de icono', () => {
   const image = fixtureImage();
-  const encoded = Hormi.Encoders.Ico.encode(image, { size: 32 });
+  const encoded = MultiFormatImageConverter.Encoders.Ico.encode(image, { size: 32 });
   assert.equal(u16(encoded, 0), 0);
   assert.equal(u16(encoded, 2), 1);
   assert.equal(u16(encoded, 4), 1);
@@ -519,14 +519,14 @@ await test('ICO genera directorio y DIB de icono', () => {
 
 await test('ICO usa la resolucion actual por defecto si cabe en el formato', () => {
   const image = fixtureImage();
-  const encoded = Hormi.Encoders.Ico.encode(image, { size: 'source' });
+  const encoded = MultiFormatImageConverter.Encoders.Ico.encode(image, { size: 'source' });
   assert.equal(encoded[6], image.width);
   assert.equal(encoded[7], image.height);
 });
 
 await test('TIFF genera cabecera little-endian baseline', () => {
   const image = fixtureImage();
-  const encoded = Hormi.Encoders.Tiff.encode(image, { alphaMode: 'preserve' });
+  const encoded = MultiFormatImageConverter.Encoders.Tiff.encode(image, { alphaMode: 'preserve' });
   assert.equal(encoded[0], 0x49);
   assert.equal(encoded[1], 0x49);
   assert.equal(u16(encoded, 2), 42);
@@ -534,7 +534,7 @@ await test('TIFF genera cabecera little-endian baseline', () => {
 
 await test('TIFF escribe DPI configurable', () => {
   const image = fixtureImage();
-  const encoded = Hormi.Encoders.Tiff.encode(image, { alphaMode: 'flatten', dpi: 300 });
+  const encoded = MultiFormatImageConverter.Encoders.Tiff.encode(image, { alphaMode: 'flatten', dpi: 300 });
   const ifdOffset = u32(encoded, 4);
   const entries = u16(encoded, ifdOffset);
   let xResolutionOffset = 0;
@@ -549,11 +549,11 @@ await test('TIFF escribe DPI configurable', () => {
 });
 
 await test('ZIP empaqueta entradas sin compresion', async () => {
-  const blob = await Hormi.Zip.createZip([{ name: 'hola.txt', data: 'hola' }]);
+  const blob = await MultiFormatImageConverter.Zip.createZip([{ name: 'hola.txt', data: 'hola' }]);
   const encoded = await blobBytes(blob);
-  assert.equal(Hormi.Core.Binary.readU32LE(encoded, 0), 0x04034b50);
+  assert.equal(MultiFormatImageConverter.Core.Binary.readU32LE(encoded, 0), 0x04034b50);
   assert.ok(encoded.includes(0x68));
-  assert.equal(Hormi.Core.Binary.readU32LE(encoded, encoded.length - 22), 0x06054b50);
+  assert.equal(MultiFormatImageConverter.Core.Binary.readU32LE(encoded, encoded.length - 22), 0x06054b50);
 });
 
 console.log('Todas las pruebas pasaron');
